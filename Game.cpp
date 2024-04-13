@@ -49,7 +49,6 @@ void Game::handleEvents(){
 void Game::handleKeyboardInput(SDL_Event e){
       switch(e.key.keysym.sym){
         case SDLK_RIGHT:
-            std::cout << "pressed right" << std::endl;
             this->player->playerX += 0.25;
             break;
         case SDLK_LEFT:
@@ -111,20 +110,31 @@ void Game::renderPlayer(){
     SDL_RenderFillRect(renderer, &block);
 }
 
+
 void Game::checkCollisions(Player * player){
     bool isColliding = false;
     int playerXMin = floorf(player->playerX);
     int playerXMax = ceil(player->playerX);
     int playerYMin = floorf(player->playerY);
     int playerYMax = ceil(player->playerY);
-    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMin) == 1){isColliding = true;}
-    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMax) == 1){isColliding = true;}
-    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMin) == 1){isColliding = true;}
-    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMax) == 1){isColliding = true;}
+    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMin);}
+    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMin);}
+    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMax);}
+    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMax);}
+}
 
-    std::cout << isColliding << std::endl;
-    // std::cout << playerXMax << std::endl;
+// Used for debugging mainly
+void Game::drawCollisionbox(int boxX, int boxY){
+    SDL_SetRenderDrawColor(renderer,255,255,0,255); // Yellow
 
+    SDL_Rect block {boxX * 64, boxY * 64 ,64,3}; // Top
+    SDL_RenderFillRect(renderer, &block);
+    block = {boxX* 64, boxY * 64,3,64};  // Left
+    SDL_RenderFillRect(renderer, &block);
+    block = {(boxX+1)* 64 - 3, boxY * 64,3,64}; // Right
+    SDL_RenderFillRect(renderer, &block);
+    block = {(boxX) * 64, (boxY+1) * 64 - 3,64,3}; // Bottom
+    SDL_RenderFillRect(renderer, &block);
 }
 
 void Game::clean(){
