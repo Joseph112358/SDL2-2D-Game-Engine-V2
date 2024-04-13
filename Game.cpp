@@ -5,6 +5,8 @@
 #include "Player.h"
 #include <cmath>
 
+int middleOfScreenX = 512; int middleOfScreenY = 320;
+
 Game::Game(){
     // Maybe load map
 
@@ -78,21 +80,62 @@ void Game::render(){
     // Maybe something like Player::drawPlayer(Renderer * renderer)
     // And Level::drawMap(Renderer * renderer)
 
-    for(int i = 0; i < this->level->mapX; i++){
-        for(int j = 0; j < this->level->mapY; j++){
-            int currentSquareX =  (i *64); // change var name, maybe tileScreenCoords?
-            int currentSquareY =  (j *64);
-            // Code for working out tile
-            int currentTileX = i;
-            int currentTileY = j;
-            int currentTile = currentTileY*this->level->mapX+currentTileX;
+    // for(int i = 0; i < this->level->mapX; i++){
+    //     for(int j = 0; j < this->level->mapY; j++){
+    //         int currentSquareX =  (i *64); // change var name, maybe tileScreenCoords?
+    //         int currentSquareY =  (j *64);
+    //         // Code for working out tile
+    //         int currentTileX = i;
+    //         int currentTileY = j;
+    //         int currentTile = currentTileY*this->level->mapX+currentTileX;
 
-              if(this->level->floorMap.at(currentTile) == 1){
-                // std:: cout << "Here" << std::endl;
+    //           if(this->level->floorMap.at(currentTile) == 1){
+    //             // std:: cout << "Here" << std::endl;
+    //             SDL_SetRenderDrawColor(renderer,65,90,90,255);
+    //             SDL_Rect block {currentSquareX, currentSquareY,64,64};
+    //             SDL_RenderFillRect(renderer, &block);
+    //           }
+    //     }
+    // }
+
+
+
+    // Because the player can move by less than 1 tile (0.25 a tile to be precise), we have to find
+    // The offset when drawing each tile. The maths is a little complicated but this works
+
+    // This code does not work yet
+    int integerPart = static_cast<int>(player->playerX);
+    float playerXOffset = player->playerX - integerPart;
+    integerPart = static_cast<int>(player->playerY);
+    float playerYOffset = player->playerY - integerPart;
+    
+
+    // mayeb do floats?
+    for(int i = -8; i < 8; i++){
+        for(int j = -5; j < 5; j++){
+            int currentSquareX = middleOfScreenX + (i *64) - (playerXOffset * 64)  ; // change var name, maybe tileScreenCoords?
+            int currentSquareY = middleOfScreenY + (j *64) - (playerYOffset * 64);
+            int currentTileX = this->player->playerX+i;
+            int currentTileY = this->player->playerY+j;
+            int currentTile = currentTileY*this->level->mapX+currentTileX;
+            SDL_Rect currentTileDimensions {currentSquareX, currentSquareY,64,64};
+
+
+            bool inMap = true;
+            if(currentTileX > this->level->mapX -1 || currentTileX < 0 || currentTileY > this->level->mapY -1 || currentTileY < 0) inMap = false;
+       
+            if(inMap){
+            if(this->level->floorMap.at(currentTile) == 1){
                 SDL_SetRenderDrawColor(renderer,65,90,90,255);
                 SDL_Rect block {currentSquareX, currentSquareY,64,64};
                 SDL_RenderFillRect(renderer, &block);
               }
+            }
+            else {
+                SDL_SetRenderDrawColor(renderer,0,0,0,255);
+                SDL_Rect block {currentSquareX, currentSquareY,64,64};
+                SDL_RenderFillRect(renderer, &block);
+            }
         }
     }
 
@@ -105,8 +148,11 @@ void Game::render(){
 }
 
 void Game::renderPlayer(){
-     SDL_SetRenderDrawColor(renderer,0,90,90,255);
-    SDL_Rect block {(int)(this->player->playerX*64),(int)(this->player->playerY*64),64,64};
+    //  SDL_SetRenderDrawColor(renderer,0,90,90,255);
+    // SDL_Rect block {(int)(this->player->playerX*64),(int)(this->player->playerY*64),64,64};
+    // SDL_RenderFillRect(renderer, &block);
+    SDL_SetRenderDrawColor(renderer,0,90,90,255);
+    SDL_Rect block {middleOfScreenX,middleOfScreenY,64,64};
     SDL_RenderFillRect(renderer, &block);
 }
 
@@ -125,15 +171,22 @@ void Game::checkCollisions(Player * player){
 
 // Used for debugging mainly
 void Game::drawCollisionbox(int boxX, int boxY){
-    SDL_SetRenderDrawColor(renderer,255,255,0,255); // Yellow
 
-    SDL_Rect block {boxX * 64, boxY * 64 ,64,3}; // Top
+    float relativeBoxTopLeftX = boxX - player->playerX;
+    float relativeBoxTopLeftY = boxY - player->playerY;
+
+    SDL_SetRenderDrawColor(renderer,255,255,0,255); // Yellow
+    // Left border
+    SDL_Rect block {middleOfScreenX + (int)(relativeBoxTopLeftX*64) , middleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
-    block = {boxX* 64, boxY * 64,3,64};  // Left
+     // Right border
+    block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) + 64 , middleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
-    block = {(boxX+1)* 64 - 3, boxY * 64,3,64}; // Right
+    // Top border
+    block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) , middleOfScreenY + int(relativeBoxTopLeftY*64),64,3}; // Top
     SDL_RenderFillRect(renderer, &block);
-    block = {(boxX) * 64, (boxY+1) * 64 - 3,64,3}; // Bottom
+    // Bottom border
+    block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) , middleOfScreenY + int(relativeBoxTopLeftY*64)+64,64,3}; // Top
     SDL_RenderFillRect(renderer, &block);
 }
 
