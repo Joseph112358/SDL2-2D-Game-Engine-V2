@@ -22,8 +22,10 @@ class Game {
         void handleEvents();
         void update();
         void render();
+        //
         void renderPlayer();
         void checkCollisions(Player * player);
+        void drawCollisionbox(int boxX, int boxY);
         void clean();
 
 
