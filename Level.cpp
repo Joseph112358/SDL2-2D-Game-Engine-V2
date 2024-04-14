@@ -32,6 +32,11 @@ Level::Level(int mapX, int mapY, std::vector<int> floorMap,std::vector<int> item
    this->itemMap = itemMap;
 }
 
+bool Level::inMap(int x, int y){
+   bool inMap = true;
+   if(x > this->mapX -1 || x < 0 || y > this->mapY -1 || y < 0) inMap = false;
+   return inMap;
+}
 int Level::getMapX(){
    return mapX;
 }
