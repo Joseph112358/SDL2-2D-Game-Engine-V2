@@ -7,10 +7,12 @@
 #include <SDL_image.h>
 int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
-SDL_Texture* atlasTex = nullptr;
+SDL_Texture* tmpTexture = nullptr;
+
+// Remove
+int animationFrame = 0;
 
 Game::Game(){
-    // Maybe load map
 
 };
 Game::~Game(){
@@ -54,9 +56,13 @@ void Game::handleKeyboardInput(SDL_Event e){
       switch(e.key.keysym.sym){
         case SDLK_RIGHT:
             this->player->playerX += 0.25;
+            player->direction = "right";
+            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             break;
         case SDLK_LEFT:
             this->player->playerX -= 0.25;
+            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
+            player->direction = "left";
             break;
         case SDLK_UP:
             this->player->playerY -= 0.25;
@@ -77,6 +83,7 @@ void Game::update(){
 }
 
 void Game::render(){
+    SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
 
     // Maybe something like Player::drawPlayer(Renderer * renderer)
@@ -91,8 +98,8 @@ void Game::render(){
     
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
-    tmpSurface = IMG_Load("Atlas3.png");
-    atlasTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+    tmpSurface = IMG_Load("res/Atlas3.png");
+    tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
     for(int i = -8; i < 10; i++){
         for(int j = -5; j < 7; j++){
             int currentSquareX = middleOfScreenX + (i *64) - (playerXFloatPart * 64)  ; // change var name, maybe tileScreenCoords?
@@ -126,7 +133,7 @@ void Game::render(){
             if(inMap){
             if(this->level->floorMap.at(currentTile) == 1){
                 SDL_Rect block {currentSquareX, currentSquareY,64,64};
-                SDL_RenderCopy(renderer,atlasTex,NULL,&currentTileDimensions);
+                SDL_RenderCopy(renderer,tmpTexture,NULL,&currentTileDimensions);
               }
             }
             else {
@@ -136,10 +143,10 @@ void Game::render(){
             }
         }
     }
-    SDL_DestroyTexture(atlasTex);
+    SDL_DestroyTexture(tmpTexture);
     SDL_FreeSurface(tmpSurface);
 
-    renderPlayer();
+    renderPlayer(this->player);
     checkCollisions(player);
 
 
@@ -148,10 +155,21 @@ void Game::render(){
     SDL_RenderPresent(renderer);
 }
 
-void Game::renderPlayer(){
-    SDL_SetRenderDrawColor(renderer,0,90,90,255);
+void Game::renderPlayer(Player * player){
+    tmpSurface = IMG_Load("res/player-sprite-v1.png");
+    tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+
+    // Remove this code later, just a test thing
+    int atlasYOffset = 0;
+    player->direction == "right" ? atlasYOffset = 0 : atlasYOffset = 1;
+    SDL_Rect playerAtlasCoords {animationFrame * 32, atlasYOffset * 32, 32, 32};
+
     SDL_Rect block {middleOfScreenX,middleOfScreenY,64,64};
-    SDL_RenderFillRect(renderer, &block);
+    SDL_RenderCopy(renderer,tmpTexture,&playerAtlasCoords,&block);
+
+    SDL_DestroyTexture(tmpTexture);
+    SDL_FreeSurface(tmpSurface);
+
 }
 
 

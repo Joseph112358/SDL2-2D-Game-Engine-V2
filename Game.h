@@ -20,7 +20,7 @@ class Game {
         void update();
         void render();
         //
-        void renderPlayer();
+        void renderPlayer(Player * player);
         void checkCollisions(Player * player);
         void drawCollisionbox(int boxX, int boxY);
         void clean();
