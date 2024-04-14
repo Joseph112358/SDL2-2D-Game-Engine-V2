@@ -4,8 +4,10 @@
 #include "Level.h"
 #include "Player.h"
 #include <cmath>
-
+#include <SDL_image.h>
 int middleOfScreenX = 512; int middleOfScreenY = 320;
+SDL_Surface* tmpSurface = nullptr;
+SDL_Texture* atlasTex = nullptr;
 
 Game::Game(){
     // Maybe load map
@@ -80,55 +82,51 @@ void Game::render(){
     // Maybe something like Player::drawPlayer(Renderer * renderer)
     // And Level::drawMap(Renderer * renderer)
 
-    // for(int i = 0; i < this->level->mapX; i++){
-    //     for(int j = 0; j < this->level->mapY; j++){
-    //         int currentSquareX =  (i *64); // change var name, maybe tileScreenCoords?
-    //         int currentSquareY =  (j *64);
-    //         // Code for working out tile
-    //         int currentTileX = i;
-    //         int currentTileY = j;
-    //         int currentTile = currentTileY*this->level->mapX+currentTileX;
-
-    //           if(this->level->floorMap.at(currentTile) == 1){
-    //             // std:: cout << "Here" << std::endl;
-    //             SDL_SetRenderDrawColor(renderer,65,90,90,255);
-    //             SDL_Rect block {currentSquareX, currentSquareY,64,64};
-    //             SDL_RenderFillRect(renderer, &block);
-    //           }
-    //     }
-    // }
-
-
-
     // Because the player can move by less than 1 tile (0.25 a tile to be precise), we have to find
     // The offset when drawing each tile. The maths is a little complicated but this works
-
-    // This code does not work yet
-    int integerPart = static_cast<int>(player->playerX);
-    float playerXOffset = player->playerX - integerPart;
-    integerPart = static_cast<int>(player->playerY);
-    float playerYOffset = player->playerY - integerPart;
+    int playerXIntegerPart = static_cast<int>(player->playerX);
+    float playerXFloatPart = player->playerX - playerXIntegerPart;
+    int playerYIntegerPart = static_cast<int>(player->playerY);
+    float playerYFloatPart = player->playerY - playerYIntegerPart;
     
+    // Camera system works, but is a little unintuitive
+    // Extract to tiny function?
+    tmpSurface = IMG_Load("Atlas3.png");
+    atlasTex = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+    for(int i = -8; i < 10; i++){
+        for(int j = -5; j < 7; j++){
+            int currentSquareX = middleOfScreenX + (i *64) - (playerXFloatPart * 64)  ; // change var name, maybe tileScreenCoords?
+            int currentSquareY = middleOfScreenY + (j *64) - (playerYFloatPart * 64);
+            
+            // Weird workaround code
+            // If currentTileX = -0.5, it rounds to 0 which is technically in bounds, when it shouldn't be
+            // Hence, without this code, the first out of bounds area renders incorrectly.
+            int currentTileX;
+            if((float)player->playerX+i < 0){
+                currentTileX = -1;
+            }
+            else {
+                currentTileX = this->player->playerX+i;
+            }
 
-    // mayeb do floats?
-    for(int i = -8; i < 8; i++){
-        for(int j = -5; j < 5; j++){
-            int currentSquareX = middleOfScreenX + (i *64) - (playerXOffset * 64)  ; // change var name, maybe tileScreenCoords?
-            int currentSquareY = middleOfScreenY + (j *64) - (playerYOffset * 64);
-            int currentTileX = this->player->playerX+i;
-            int currentTileY = this->player->playerY+j;
+            int currentTileY;
+            if((float)player->playerY+j < 0){
+                currentTileY = -1;
+            } else {
+                 currentTileY = this->player->playerY+j;
+            }
             int currentTile = currentTileY*this->level->mapX+currentTileX;
+        
             SDL_Rect currentTileDimensions {currentSquareX, currentSquareY,64,64};
 
+            // End of workaround tile code
 
-            bool inMap = true;
-            if(currentTileX > this->level->mapX -1 || currentTileX < 0 || currentTileY > this->level->mapY -1 || currentTileY < 0) inMap = false;
-       
+            // Extract to tiny function?
+            bool inMap = this->level->inMap(currentTileX, currentTileY);
             if(inMap){
             if(this->level->floorMap.at(currentTile) == 1){
-                SDL_SetRenderDrawColor(renderer,65,90,90,255);
                 SDL_Rect block {currentSquareX, currentSquareY,64,64};
-                SDL_RenderFillRect(renderer, &block);
+                SDL_RenderCopy(renderer,atlasTex,NULL,&currentTileDimensions);
               }
             }
             else {
@@ -138,9 +136,12 @@ void Game::render(){
             }
         }
     }
+    SDL_DestroyTexture(atlasTex);
+    SDL_FreeSurface(tmpSurface);
 
     renderPlayer();
     checkCollisions(player);
+
 
     SDL_SetRenderDrawColor(renderer,255,255,255,255); // set background color to White
 
@@ -148,9 +149,6 @@ void Game::render(){
 }
 
 void Game::renderPlayer(){
-    //  SDL_SetRenderDrawColor(renderer,0,90,90,255);
-    // SDL_Rect block {(int)(this->player->playerX*64),(int)(this->player->playerY*64),64,64};
-    // SDL_RenderFillRect(renderer, &block);
     SDL_SetRenderDrawColor(renderer,0,90,90,255);
     SDL_Rect block {middleOfScreenX,middleOfScreenY,64,64};
     SDL_RenderFillRect(renderer, &block);
@@ -180,7 +178,7 @@ void Game::drawCollisionbox(int boxX, int boxY){
     SDL_Rect block {middleOfScreenX + (int)(relativeBoxTopLeftX*64) , middleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
      // Right border
-    block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) + 64 , middleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
+    block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) + 61 , middleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
     // Top border
     block  = {middleOfScreenX + (int)(relativeBoxTopLeftX*64) , middleOfScreenY + int(relativeBoxTopLeftY*64),64,3}; // Top

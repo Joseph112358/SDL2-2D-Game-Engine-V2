@@ -9,4 +9,5 @@ class Level {
         std::vector<int> floorMap;
         std::vector<int> itemMap;
         int getMapX();
+        bool inMap(int x, int y);
 };
