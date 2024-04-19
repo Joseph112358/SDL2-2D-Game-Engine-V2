@@ -16,10 +16,11 @@ class Game {
         Player * player;
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
+        // Maybe take in user inputs
         void handleEvents();
         void update();
         void render();
-        //
+    
         void renderPlayer(Player * player);
         void checkCollisions(Player * player);
         void drawCollisionbox(int boxX, int boxY);
