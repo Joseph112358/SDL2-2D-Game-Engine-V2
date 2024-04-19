@@ -5,15 +5,18 @@
 #include "Player.h"
 #include <cmath>
 #include <SDL_image.h>
+#include <thread>
 int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
 
-// Remove
+auto lastInputTime = std::chrono::high_resolution_clock::now();
+bool playerIdle = false;
+
+
 int animationFrame = 0;
 
 Game::Game(){
-
 };
 Game::~Game(){
 
@@ -38,6 +41,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 }
 
 void Game::handleEvents(){
+    auto currentTime = std::chrono::high_resolution_clock::now();
     SDL_Event event;
     SDL_PollEvent(&event);
     switch (event.type) {
@@ -46,8 +50,14 @@ void Game::handleEvents(){
             break;
         case SDL_KEYDOWN:
             handleKeyboardInput(event);
+            lastInputTime = std::chrono::high_resolution_clock::now();
+            playerIdle = false;
         default:
-            break;
+          auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime);
+          if(elapsed.count() > 500){
+                playerIdle = true;
+          }
+          break;
     }
 
 }
@@ -56,19 +66,23 @@ void Game::handleKeyboardInput(SDL_Event e){
       switch(e.key.keysym.sym){
         case SDLK_RIGHT:
             this->player->playerX += 0.25;
-            player->direction = "right";
+            player->direction = 90;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             break;
         case SDLK_LEFT:
             this->player->playerX -= 0.25;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-            player->direction = "left";
+            player->direction = 270;
             break;
         case SDLK_UP:
             this->player->playerY -= 0.25;
+            player->direction = 0;
+            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             break;
         case SDLK_DOWN:
             this->player->playerY += 0.25;
+            player->direction = 180;
+            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             break;
         case SDLK_BACKSPACE:
             std::cout << "Backspace\n";
@@ -78,6 +92,7 @@ void Game::handleKeyboardInput(SDL_Event e){
 
 }
 
+// Actually use this
 void Game::update(){
 
 }
@@ -158,11 +173,26 @@ void Game::render(){
 void Game::renderPlayer(Player * player){
     tmpSurface = IMG_Load("res/player-sprite-v1.png");
     tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-
-    // Remove this code later, just a test thing
-    int atlasYOffset = 0;
-    player->direction == "right" ? atlasYOffset = 0 : atlasYOffset = 1;
-    SDL_Rect playerAtlasCoords {animationFrame * 32, atlasYOffset * 32, 32, 32};
+    // Should / could be moved to function or class / handler?
+    int atlasYPos = 0;
+    switch (player->direction){
+        case 90: // do right animation
+            atlasYPos = 0;
+            break;
+        case 270: // Do left animation
+            atlasYPos = 1;
+            break;
+        case 0:
+            atlasYPos = 2;
+            break;
+        case 180:
+            atlasYPos = 3;
+            break;
+        default:
+            break;
+    }
+    if(playerIdle) animationFrame = 0, atlasYPos = 0;
+    SDL_Rect playerAtlasCoords {animationFrame * 32, atlasYPos * 32, 32, 32};
 
     SDL_Rect block {middleOfScreenX,middleOfScreenY,64,64};
     SDL_RenderCopy(renderer,tmpTexture,&playerAtlasCoords,&block);
@@ -171,6 +201,7 @@ void Game::renderPlayer(Player * player){
     SDL_FreeSurface(tmpSurface);
 
 }
+
 
 
 void Game::checkCollisions(Player * player){
