@@ -9,6 +9,7 @@
 int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
+SDL_Texture* itemsTexture = nullptr;
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -95,6 +96,8 @@ void Game::drawMap(){
     // Extract to tiny function?
     tmpSurface = IMG_Load("res/Atlas3.png");
     tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+    tmpSurface = IMG_Load("res/items-sprite-v1.png");
+    itemsTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
     for(int i = -8; i < 10; i++){
         for(int j = -5; j < 7; j++){
             int currentSquareX = middleOfScreenX + (i *64) - (playerXFloatPart * 64)  ; // change var name, maybe tileScreenCoords?
@@ -137,6 +140,14 @@ void Game::drawMap(){
                 SDL_RenderFillRect(renderer, &block);
             }
 
+            // Draw items
+
+            if(this->level->itemMap.at(currentTile) == 1){
+                SDL_Rect block {currentSquareX, currentSquareY,64,64};
+                SDL_Rect atlasCoords {0,0,16,16};
+                SDL_RenderCopy(renderer,itemsTexture,&atlasCoords,&currentTileDimensions);
+              }
+
             // Draw Walls
             if(this->level->wallMap.at(currentTile) == 1){
                 SDL_Rect block {currentSquareX, currentSquareY,64,64};
@@ -169,6 +180,7 @@ void Game::render(){
 
     drawMap();
     SDL_DestroyTexture(tmpTexture);
+    SDL_DestroyTexture(itemsTexture);
     SDL_FreeSurface(tmpSurface);
 
     renderPlayer(this->player);
