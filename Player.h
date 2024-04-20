@@ -8,4 +8,5 @@ class Player {
         float playerX;
         float playerY;
         int direction;
+        bool playerIdle;
 };

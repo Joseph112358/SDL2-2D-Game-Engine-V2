@@ -4,4 +4,5 @@ Player::Player(){
     this->playerX = 8.0;
     this->playerY = 5.0;
     this->direction = 0;
+    this->playerIdle = true;
 }

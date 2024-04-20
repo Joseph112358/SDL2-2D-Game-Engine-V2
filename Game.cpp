@@ -5,13 +5,13 @@
 #include "Player.h"
 #include <cmath>
 #include <SDL_image.h>
+#include "AnimationHandler.h"
 int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
+AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
-bool playerIdle = false;
-int animationFrame = 0;
 
 Game::Game(){
 };
@@ -48,37 +48,32 @@ void Game::handleEvents(){
 
      handleKeyboardInput(event);
 
-
 }
 
 void Game::handleKeyboardInput(SDL_Event e){
-    playerIdle = true;
+     player->playerIdle = true;
  
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_RIGHT]){
         this->player->playerX += 0.25;
             player->direction = 90;
-            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-            playerIdle = false;
+            player->playerIdle = false;
         // handlePlayerMovement()
     }
     else if(keyState[SDL_SCANCODE_LEFT]){
         this->player->playerX -= 0.25;
-            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             player->direction = 270;
-             playerIdle = false;
+            player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_UP]){
         this->player->playerY -= 0.25;
             player->direction = 0;
-            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-             playerIdle = false;
+              player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_DOWN]){
         this->player->playerY += 0.25;
             player->direction = 180;
-            animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-             playerIdle = false;
+              player->playerIdle = false;
     }
 
 }
@@ -162,34 +157,9 @@ void Game::render(){
 }
 
 void Game::renderPlayer(Player * player){
-    tmpSurface = IMG_Load("res/player-sprite-v1.png");
-    tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-    // Should / could be moved to function or class / handler?
-    int atlasYPos = 0;
-    switch (player->direction){
-        case 90: // do right animation
-            atlasYPos = 0;
-            break;
-        case 270: // Do left animation
-            atlasYPos = 1;
-            break;
-        case 0:
-            atlasYPos = 2;
-            break;
-        case 180:
-            atlasYPos = 3;
-            break;
-        default:
-            break;
-    }
-    if(playerIdle) animationFrame = 0, atlasYPos = 0;
-    SDL_Rect playerAtlasCoords {animationFrame * 32, atlasYPos * 32, 32, 32};
 
-    SDL_Rect block {middleOfScreenX,middleOfScreenY,64,64};
-    SDL_RenderCopy(renderer,tmpTexture,&playerAtlasCoords,&block);
-
-    SDL_DestroyTexture(tmpTexture);
-    SDL_FreeSurface(tmpSurface);
+    animationHandler->drawSprite(renderer, player);
+  
 
 }
 
