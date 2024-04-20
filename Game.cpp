@@ -5,15 +5,12 @@
 #include "Player.h"
 #include <cmath>
 #include <SDL_image.h>
-#include <thread>
 int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
 
-auto lastInputTime = std::chrono::high_resolution_clock::now();
+const Uint8 * keyState;
 bool playerIdle = false;
-
-
 int animationFrame = 0;
 
 Game::Game(){
@@ -41,54 +38,48 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 }
 
 void Game::handleEvents(){
-    auto currentTime = std::chrono::high_resolution_clock::now();
     SDL_Event event;
     SDL_PollEvent(&event);
     switch (event.type) {
         case SDL_QUIT:
             isRunning = false;
             break;
-        case SDL_KEYDOWN:
-            handleKeyboardInput(event);
-            lastInputTime = std::chrono::high_resolution_clock::now();
-            playerIdle = false;
-        default:
-          auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime);
-          if(elapsed.count() > 500){
-                playerIdle = true;
-          }
-          break;
     }
+
+     handleKeyboardInput(event);
+
 
 }
 
 void Game::handleKeyboardInput(SDL_Event e){
-      switch(e.key.keysym.sym){
-        case SDLK_RIGHT:
-            this->player->playerX += 0.25;
+    playerIdle = true;
+ 
+    keyState = SDL_GetKeyboardState(NULL);
+    if(keyState[SDL_SCANCODE_RIGHT]){
+        this->player->playerX += 0.25;
             player->direction = 90;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-            break;
-        case SDLK_LEFT:
-            this->player->playerX -= 0.25;
+            playerIdle = false;
+        // handlePlayerMovement()
+    }
+    else if(keyState[SDL_SCANCODE_LEFT]){
+        this->player->playerX -= 0.25;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
             player->direction = 270;
-            break;
-        case SDLK_UP:
-            this->player->playerY -= 0.25;
+             playerIdle = false;
+    }
+    if(keyState[SDL_SCANCODE_UP]){
+        this->player->playerY -= 0.25;
             player->direction = 0;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-            break;
-        case SDLK_DOWN:
-            this->player->playerY += 0.25;
+             playerIdle = false;
+    }
+    else if(keyState[SDL_SCANCODE_DOWN]){
+        this->player->playerY += 0.25;
             player->direction = 180;
             animationFrame == 6 ? animationFrame = 1 : animationFrame++;
-            break;
-        case SDLK_BACKSPACE:
-            std::cout << "Backspace\n";
-        default:
-            break;
-      }
+             playerIdle = false;
+    }
 
 }
 
