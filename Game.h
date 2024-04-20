@@ -20,6 +20,10 @@ class Game {
         void handleEvents();
         void update();
         void render();
+
+        void drawMap();
+        void drawWalls();
+        void drawFloor();
     
         void renderPlayer(Player * player);
         void checkCollisions(Player * player);

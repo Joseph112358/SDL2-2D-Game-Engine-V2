@@ -11,7 +11,7 @@
 Level::Level(){
    this->mapX = 17;
    this->mapY = 10;
-   this->floorMap = * new std::vector<int> 
+   this->wallMap = * new std::vector<int> 
          {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
           1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
           1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
@@ -23,13 +23,26 @@ Level::Level(){
           1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
           1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1                     
          };
+   this->floorMap = * new std::vector<int> 
+         {1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
+          0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+          1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
+          0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+          1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
+          0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+          1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
+          0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
+          1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
+          0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,                    
+         };
 }
 
-Level::Level(int mapX, int mapY, std::vector<int> floorMap,std::vector<int> itemMap){
+
+Level::Level(int mapX, int mapY, std::vector<int> floorMap,std::vector<int> wallMap){
    this->mapX = mapX;
    this->mapY = mapY;
    this->floorMap = floorMap;
-   this->itemMap = itemMap;
+   this->wallMap = wallMap;
 }
 
 bool Level::inMap(int x, int y){
