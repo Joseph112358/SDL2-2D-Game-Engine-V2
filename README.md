@@ -1,7 +1,6 @@
 TODO list
-* Refactor animation code, very unclean right now
-* For movement, change from events to states?
-* Be able to move diagonally?
+* Fix diagonal behaviour so distance travelled is constant.
+* Interactable map. E.g. sow plants, open chest, use terminal
 
 * Decide on how to do rendering, either:
   * Player class have a renderPlayer(Renderer * renderer); function

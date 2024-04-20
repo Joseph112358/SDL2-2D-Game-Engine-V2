@@ -68,7 +68,7 @@ void Game::handleKeyboardInput(SDL_Event e){
     if(keyState[SDL_SCANCODE_UP]){
         this->player->playerY -= 0.25;
             player->direction = 0;
-              player->playerIdle = false;
+            player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_DOWN]){
         this->player->playerY += 0.25;
@@ -83,15 +83,9 @@ void Game::update(){
 
 }
 
-void Game::render(){
-    SDL_RenderSetLogicalSize(renderer, 1088, 704);
-    SDL_RenderClear(renderer);
-
-    // Maybe something like Player::drawPlayer(Renderer * renderer)
-    // And Level::drawMap(Renderer * renderer)
-
-    // Because the player can move by less than 1 tile (0.25 a tile to be precise), we have to find
-    // The offset when drawing each tile. The maths is a little complicated but this works
+// Get rid of floor drawing
+// We can merge all drawing stuff
+void Game::drawMap(){
     int playerXIntegerPart = static_cast<int>(player->playerX);
     float playerXFloatPart = player->playerX - playerXIntegerPart;
     int playerYIntegerPart = static_cast<int>(player->playerY);
@@ -132,7 +126,19 @@ void Game::render(){
             // Extract to tiny function?
             bool inMap = this->level->inMap(currentTileX, currentTileY);
             if(inMap){
+            // Draw Floor
             if(this->level->floorMap.at(currentTile) == 1){
+                SDL_Rect block {currentSquareX, currentSquareY,64,64};
+                SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+                SDL_RenderFillRect(renderer, &block);
+            } else {
+                SDL_Rect block {currentSquareX, currentSquareY,64,64};
+                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+                SDL_RenderFillRect(renderer, &block);
+            }
+
+            // Draw Walls
+            if(this->level->wallMap.at(currentTile) == 1){
                 SDL_Rect block {currentSquareX, currentSquareY,64,64};
                 SDL_RenderCopy(renderer,tmpTexture,NULL,&currentTileDimensions);
               }
@@ -144,6 +150,24 @@ void Game::render(){
             }
         }
     }
+    
+}
+
+void Game::drawFloor(){
+    
+}
+
+
+void Game::render(){
+    SDL_RenderSetLogicalSize(renderer, 1088, 704);
+    SDL_RenderClear(renderer);
+
+    // Draw map
+    //   Draw floor
+    //   Draw floor items
+    //   Draw walls
+
+    drawMap();
     SDL_DestroyTexture(tmpTexture);
     SDL_FreeSurface(tmpSurface);
 
@@ -151,7 +175,7 @@ void Game::render(){
     checkCollisions(player);
 
 
-    SDL_SetRenderDrawColor(renderer,255,255,255,255); // set background color to White
+    // SDL_SetRenderDrawColor(renderer,255,255,255,255); // set background color to White
 
     SDL_RenderPresent(renderer);
 }
@@ -171,10 +195,10 @@ void Game::checkCollisions(Player * player){
     int playerXMax = ceil(player->playerX);
     int playerYMin = floorf(player->playerY);
     int playerYMax = ceil(player->playerY);
-    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMin);}
-    if(this->level->floorMap.at(playerYMin*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMin);}
-    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMax);}
-    if(this->level->floorMap.at(playerYMax*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMax);}
+    if(this->level->wallMap.at(playerYMin*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMin);}
+    if(this->level->wallMap.at(playerYMin*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMin);}
+    if(this->level->wallMap.at(playerYMax*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMax);}
+    if(this->level->wallMap.at(playerYMax*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMax);}
 }
 
 // Used for debugging mainly
