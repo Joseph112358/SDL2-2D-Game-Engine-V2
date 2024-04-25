@@ -6,6 +6,7 @@
 #include<vector>
 #include "Level.h"
 #include "Player.h"
+#include "Entity.h"
 class Game {
     public:
         Game();
@@ -24,6 +25,7 @@ class Game {
         void drawMap();
         void drawWalls();
         void drawFloor();
+        void drawEntity(Entity * entity);
     
         void renderPlayer(Player * player);
         void checkCollisions(Player * player);

@@ -3,6 +3,7 @@
 #include <vector>
 #include "Level.h"
 #include "Player.h"
+#include "Entity.h"
 #include <cmath>
 #include <SDL_image.h>
 #include "AnimationHandler.h"
@@ -10,6 +11,7 @@ int middleOfScreenX = 512; int middleOfScreenY = 320;
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
+Entity * entity = new Entity();
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -164,30 +166,28 @@ void Game::drawMap(){
     
 }
 
-void Game::drawFloor(){
-    
-}
 
 
 void Game::render(){
     SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
 
-    // Draw map
+    drawMap();
     //   Draw floor
     //   Draw floor items
     //   Draw walls
 
-    drawMap();
+
+    // Draw entites (eventually)
+    // drawEntities(Level * level)... for entity in levels ...
+    drawEntity(entity);
+
     SDL_DestroyTexture(tmpTexture);
     SDL_DestroyTexture(itemsTexture);
     SDL_FreeSurface(tmpSurface);
 
     renderPlayer(this->player);
     checkCollisions(player);
-
-
-    // SDL_SetRenderDrawColor(renderer,255,255,255,255); // set background color to White
 
     SDL_RenderPresent(renderer);
 }
@@ -196,7 +196,22 @@ void Game::renderPlayer(Player * player){
 
     animationHandler->drawSprite(renderer, player);
   
+}
 
+
+// Eventually replace with a draw active items maybe?
+void Game::drawEntity(Entity * entity){
+
+    // Work out distance to player
+    float xOffset = entity->entityX - this->player->playerX; 
+    float yOffset = entity->entityY -player->playerY;
+    // check if in range maybe?
+    int entityScreenX = middleOfScreenX + xOffset*64;
+    int entityScreenY = middleOfScreenY + yOffset*64;
+
+     SDL_Rect block { entityScreenX, entityScreenY,128,64};
+     SDL_Rect atlasCoords {0,16,32,16};
+     SDL_RenderCopy(renderer,itemsTexture,&atlasCoords,&block);
 }
 
 
