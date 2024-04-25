@@ -2,7 +2,7 @@
 CC = g++
 
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp game.cpp level.cpp player.cpp AnimationHandler.cpp
+OBJS = main.cpp game.cpp level.cpp player.cpp AnimationHandler.cpp Entity.cpp
 
 # #INCLUDE_PATHS specifies the additional include paths we'll need
 INCLUDE_PATHS = -IC:\Dev\SDL-for-Mingw\SDL2-2.30.0\i686-w64-mingw32\include\SDL2 -IC:\Dev\SDL-for-Mingw\SDL_Image\SDL2_image-2.8.2\i686-w64-mingw32\include\SDL2
