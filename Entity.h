@@ -7,4 +7,6 @@ class Entity {
         Entity();
         float entityX;
         float entityY;
+        int direction;
+        void move();
 };
