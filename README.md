@@ -1,4 +1,5 @@
 TODO list
+* Create an "NPC" entity, write a script for path finding
 * Fix diagonal behaviour so distance travelled is constant.
 * Interactable map. E.g. sow plants, open chest, use terminal
 
