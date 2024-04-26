@@ -10,6 +10,7 @@
 SDL_Surface* tmpSurface = nullptr;
 SDL_Texture* tmpTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
+SDL_Texture* entitiesTexture = nullptr;
 Entity * entity = new Entity();
 AnimationHandler * animationHandler = new AnimationHandler();
 
@@ -56,26 +57,26 @@ void Game::handleEvents(){
 
 void Game::handleKeyboardInput(SDL_Event e){
      player->playerIdle = true;
- 
+    float playerMovementSpeed = 0.20;
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_RIGHT]){
-        this->player->playerX += 0.25;
+        this->player->playerX += playerMovementSpeed;
             player->direction = 90;
             player->playerIdle = false;
         // handlePlayerMovement()
     }
     else if(keyState[SDL_SCANCODE_LEFT]){
-        this->player->playerX -= 0.25;
+        this->player->playerX -= playerMovementSpeed;
             player->direction = 270;
             player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_UP]){
-        this->player->playerY -= 0.25;
+        this->player->playerY -= playerMovementSpeed;
             player->direction = 0;
             player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_DOWN]){
-        this->player->playerY += 0.25;
+        this->player->playerY += playerMovementSpeed;
             player->direction = 180;
               player->playerIdle = false;
     }
@@ -84,7 +85,8 @@ void Game::handleKeyboardInput(SDL_Event e){
 
 // Actually use this
 void Game::update(){
-    entity->move();
+    std::pair<int,int> coords(this->player->playerX, this->player->playerY);
+    entity->move(coords);
 }
 
 // Get rid of floor drawing
@@ -185,6 +187,7 @@ void Game::render(){
 
     SDL_DestroyTexture(tmpTexture);
     SDL_DestroyTexture(itemsTexture);
+    SDL_DestroyTexture(entitiesTexture);
     SDL_FreeSurface(tmpSurface);
 
     renderPlayer(this->player);
@@ -203,6 +206,9 @@ void Game::renderPlayer(Player * player){
 // Eventually replace with a draw active items maybe?
 void Game::drawEntity(Entity * entity){
 
+    tmpSurface = IMG_Load("res/entities-sprite-v1.png");
+    entitiesTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+
     // Work out distance to player
     float xOffset = entity->entityX - this->player->playerX; 
     float yOffset = entity->entityY -player->playerY;
@@ -210,9 +216,9 @@ void Game::drawEntity(Entity * entity){
     int entityScreenX = kMiddleOfScreenX + xOffset*kTileSize;
     int entityScreenY = kMiddleOfScreenY + yOffset*kTileSize;
 
-     SDL_Rect block { entityScreenX, entityScreenY,128,64};
-     SDL_Rect atlasCoords {0,16,32,16};
-     SDL_RenderCopy(renderer,itemsTexture,&atlasCoords,&block);
+     SDL_Rect block { entityScreenX, entityScreenY,64,64};
+    SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
+ 
 }
 
 
