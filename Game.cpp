@@ -7,11 +7,13 @@
 #include <cmath>
 #include <SDL_image.h>
 #include "AnimationHandler.h"
-SDL_Surface* tmpSurface = nullptr;
-SDL_Texture* tmpTexture = nullptr;
+SDL_Surface* atlasSurface = nullptr;
+SDL_Surface* itemsSurface = nullptr;
+SDL_Surface* entitiesSurface = nullptr;
+SDL_Texture* atlasTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
 SDL_Texture* entitiesTexture = nullptr;
-Entity * entity = new Entity();
+Entity * entity = new Entity(7,5);
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -85,8 +87,12 @@ void Game::handleKeyboardInput(SDL_Event e){
 
 // Actually use this
 void Game::update(){
+    // updateEntites();
     std::pair<int,int> coords(this->player->playerX, this->player->playerY);
     entity->move(coords);
+
+    // std::vector<int> neighborCells = player->getNeighborCells(this->level->wallMap, this->level->mapX);
+    // entity->move(coords, neighborCells);
 }
 
 // Get rid of floor drawing
@@ -99,10 +105,10 @@ void Game::drawMap(){
     
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
-    tmpSurface = IMG_Load("res/Atlas3.png");
-    tmpTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-    tmpSurface = IMG_Load("res/items-sprite-v1.png");
-    itemsTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+    atlasSurface = IMG_Load("res/Atlas3.png");
+    atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
+    itemsSurface = IMG_Load("res/items-sprite-v1.png");
+    itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
     for(int i = -8; i < 10; i++){
         for(int j = -5; j < 7; j++){
             int currentSquareX = kMiddleOfScreenX + (i *kTileSize) - (playerXFloatPart * kTileSize)  ; // change var name, maybe tileScreenCoords?
@@ -156,7 +162,7 @@ void Game::drawMap(){
             // Draw Walls
             if(this->level->wallMap.at(currentTile) == 1){
                 SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
-                SDL_RenderCopy(renderer,tmpTexture,NULL,&currentTileDimensions);
+                SDL_RenderCopy(renderer,atlasTexture,NULL,&currentTileDimensions);
               }
             }
             else {
@@ -185,13 +191,30 @@ void Game::render(){
     // drawEntities(Level * level)... for entity in levels ...
     drawEntity(entity);
 
-    SDL_DestroyTexture(tmpTexture);
+    SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(itemsTexture);
     SDL_DestroyTexture(entitiesTexture);
-    SDL_FreeSurface(tmpSurface);
+    SDL_FreeSurface(atlasSurface);
+    SDL_FreeSurface(itemsSurface);
+    SDL_FreeSurface(entitiesSurface);
 
+    
     renderPlayer(this->player);
-    checkCollisions(player);
+    
+    std::pair<float,float> playerCoords(this->player->playerX, this->player->playerY);
+    checkCollisions(playerCoords);
+
+    std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
+    for(int tile: PlayerAdjacent){
+        drawTileBox(tile);
+    }
+    // std::pair<float,float> entityCoords(entity->entityX, entity->entityY);
+    // checkCollisions(entityCoords);
+
+
+
+
+
 
     SDL_RenderPresent(renderer);
 }
@@ -206,8 +229,8 @@ void Game::renderPlayer(Player * player){
 // Eventually replace with a draw active items maybe?
 void Game::drawEntity(Entity * entity){
 
-    tmpSurface = IMG_Load("res/entities-sprite-v1.png");
-    entitiesTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
+    entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
+    entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
     float xOffset = entity->entityX - this->player->playerX; 
@@ -222,17 +245,18 @@ void Game::drawEntity(Entity * entity){
 }
 
 
-
-void Game::checkCollisions(Player * player){
+// Change to take in any coords std::pair<int,int> coords
+// void Game::checkCollisions(Player * player){
+    void Game::checkCollisions(std::pair<float,float> coords){
     bool isColliding = false;
-    int playerXMin = floorf(player->playerX);
-    int playerXMax = ceil(player->playerX);
-    int playerYMin = floorf(player->playerY);
-    int playerYMax = ceil(player->playerY);
-    if(this->level->wallMap.at(playerYMin*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMin);}
-    if(this->level->wallMap.at(playerYMin*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMin);}
-    if(this->level->wallMap.at(playerYMax*this->level->mapX+playerXMin) == 1){isColliding = true; drawCollisionbox(playerXMin,playerYMax);}
-    if(this->level->wallMap.at(playerYMax*this->level->mapX+playerXMax) == 1){isColliding = true; drawCollisionbox(playerXMax,playerYMax);}
+    int XMin = floorf(coords.first);
+    int XMax = ceil(coords.first);
+    int YMin = floorf(coords.second);
+    int YMax = ceil(coords.second);
+    if(this->level->wallMap.at(YMin*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMin);}
+    if(this->level->wallMap.at(YMin*this->level->mapX+XMax) == 1){isColliding = true; drawCollisionbox(XMax,YMin);}
+    if(this->level->wallMap.at(YMax*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMax);}
+    if(this->level->wallMap.at(YMax*this->level->mapX+XMax) == 1){isColliding = true; drawCollisionbox(XMax,YMax);}
 }
 
 // Used for debugging mainly
@@ -256,8 +280,25 @@ void Game::drawCollisionbox(int boxX, int boxY){
     SDL_RenderFillRect(renderer, &block);
 }
 
+void Game::drawTileBox(int tileIndex){
+    std::pair<int,int> coords = arrayIntToPair(tileIndex);
+    drawCollisionbox(coords.first, coords.second);
+}
+
 void Game::clean(){
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     SDL_Quit();
+}
+
+std::pair<int,int> Game::arrayIntToPair(int arrayLocation){
+    int mapX = 17;
+    int y = arrayLocation/mapX;
+    int x = arrayLocation%mapX;
+    return std::pair<int,int> {x, y};
+}
+
+int coordsToArrayInt(std::pair<int, int> coords){
+    int mapX = 17;
+    return coords.first + mapX*coords.second;
 }

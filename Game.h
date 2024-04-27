@@ -17,7 +17,7 @@ class Game {
         Player * player;
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
-        // Maybe take in user inputs
+        // Main core functions (will be public to main)
         void handleEvents();
         void update();
         void render();
@@ -28,11 +28,15 @@ class Game {
         void drawEntity(Entity * entity);
     
         void renderPlayer(Player * player);
-        void checkCollisions(Player * player);
+        void checkCollisions(std::pair<float,float> coords);
         void drawCollisionbox(int boxX, int boxY);
+        void drawTileBox(int tileIndex);
         void clean();
 
-
+        // Helper functions
+        int coordsToArrayInt(std::pair<int,int> coords);
+        std::pair<int,int> arrayIntToPair(int arrayLocation);
+        // End of helper functions
         bool running() {return isRunning;}
 
     private:
