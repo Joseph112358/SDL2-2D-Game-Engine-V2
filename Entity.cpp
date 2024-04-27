@@ -1,18 +1,16 @@
 #include "Entity.h"
-#include "Player.h"
 #include <cmath>
 
-Entity::Entity(){
-    this->entityX = 1.0;
-    this->entityY = 1.0;
+Entity::Entity(int x, int y){
+    this->entityX = (float) x;
+    this->entityY = (float) y;
     this->direction = 1;
 }
 
-// Maybe add a list of points to visit
+// Maybe add a list of points to visit?
 
 // Maybe cache the route somehow?
 void Entity::move(std::pair<int,int> coords){
-
 
     float xToMove = coords.first - entityX;
     float yToMove = coords.second - entityY;
@@ -23,7 +21,7 @@ void Entity::move(std::pair<int,int> coords){
 
     float dist = sqrt((xToMove*xToMove)+(yToMove*yToMove));
     // Move x
-    if(fabs(xToMove) > 0.3 && dist > 1){
+    if(fabs(xToMove) > 0.1 && dist > 1){
         if(xToMove > 0){
             entityX += 0.1;
         }
@@ -31,9 +29,10 @@ void Entity::move(std::pair<int,int> coords){
             entityX -= 0.1;
         }
         entityX = ((int)(entityX * 100 + .5) / 100.0);
+        // std::cout << dist << std::endl;
     }
     // Move y
-    if(fabs(yToMove) > 0.3 && dist > 1){
+    if(fabs(yToMove) > 0.1 && dist > 1){
            if(yToMove > 0){
             entityY += 0.1;
         }
@@ -42,6 +41,18 @@ void Entity::move(std::pair<int,int> coords){
         }
         entityY = ((int)(entityY * 100 + .5) / 100.0);
     }    
+}
 
-
+void Entity::move(std::pair<int,int> coords, std::vector<int> adjacentTiles){
+    int mapX = 17;
+    int EntityArrayPos = (int) entityX + entityY*mapX;
+    int nearestTile = adjacentTiles.at(0);
+    for( int tile : adjacentTiles){
+        int currentTileDist = abs(EntityArrayPos - tile);
+        nearestTile = std::min(nearestTile, tile);
+    }
+    // int currentX = (int) entityX;
+    // int currentY = (int) entityY;
+    std::cout << nearestTile << std::endl;
+    // Work out routes
 }

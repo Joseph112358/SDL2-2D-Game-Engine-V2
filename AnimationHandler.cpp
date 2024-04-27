@@ -34,7 +34,8 @@ void AnimationHandler::drawSprite(SDL_Renderer *renderer, Player * player){
     if(player->playerIdle) animationFrame = 0, atlasYPos = 0;
 
     SDL_Rect playerAtlasCoords {animationFrame * 32, atlasYPos * 32, 32, 32};
-    SDL_Rect block {512,320,64,64};
+    // 512 - 32 so more middle of screen
+    SDL_Rect block {480,288,64,64};
     SDL_RenderCopy(renderer,tmpTexture,&playerAtlasCoords,&block);
 
     SDL_DestroyTexture(tmpTexture);
