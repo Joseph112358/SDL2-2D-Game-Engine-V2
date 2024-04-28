@@ -7,8 +7,8 @@
 class Player {
     public:
         Player();
-        float playerX;
-        float playerY;
+        int playerX;
+        int playerY;
         int direction;
         bool playerIdle;
         std::vector<int>  getNeighborTiles(std::vector<int> map, int mapX);

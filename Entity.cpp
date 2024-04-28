@@ -2,8 +2,8 @@
 #include <cmath>
 
 Entity::Entity(int x, int y){
-    this->entityX = (float) x;
-    this->entityY = (float) y;
+    this->entityX =  x;
+    this->entityY =  y;
     this->direction = 1;
 }
 
