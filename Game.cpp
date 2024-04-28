@@ -13,7 +13,7 @@ SDL_Surface* entitiesSurface = nullptr;
 SDL_Texture* atlasTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
 SDL_Texture* entitiesTexture = nullptr;
-Entity * entity = new Entity(7,5);
+Entity * entity = new Entity(128,128);
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -59,7 +59,7 @@ void Game::handleEvents(){
 
 void Game::handleKeyboardInput(SDL_Event e){
      player->playerIdle = true;
-    float playerMovementSpeed = 0.20;
+    int playerMovementSpeed = 16;
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_RIGHT]){
         this->player->playerX += playerMovementSpeed;
@@ -88,54 +88,46 @@ void Game::handleKeyboardInput(SDL_Event e){
 // Actually use this
 void Game::update(){
     // updateEntites();
+    // switch(player->direction){
+    //     case 90:
+    //     player->playerX += 1;
+    // }
+
+    // if(player->direction == 90){
+    // }
     std::pair<int,int> coords(this->player->playerX, this->player->playerY);
-    entity->move(coords);
+    // entity->move(coords);
 
     // std::vector<int> neighborCells = player->getNeighborCells(this->level->wallMap, this->level->mapX);
     // entity->move(coords, neighborCells);
 }
 
-// Get rid of floor drawing
-// We can merge all drawing stuff
 void Game::drawMap(){
-    int playerXIntegerPart = static_cast<int>(player->playerX);
-    float playerXFloatPart = player->playerX - playerXIntegerPart;
-    int playerYIntegerPart = static_cast<int>(player->playerY);
-    float playerYFloatPart = player->playerY - playerYIntegerPart;
-    
+
+    int playerXoffset = player->playerX % 64;
+    int playerYoffset = player->playerY % 64;
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
     atlasSurface = IMG_Load("res/Atlas3.png");
     atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
     itemsSurface = IMG_Load("res/items-sprite-v1.png");
     itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
-    for(int i = -8; i < 10; i++){
-        for(int j = -5; j < 7; j++){
-            int currentSquareX = kMiddleOfScreenX + (i *kTileSize) - (playerXFloatPart * kTileSize)  ; // change var name, maybe tileScreenCoords?
-            int currentSquareY = kMiddleOfScreenY + (j *kTileSize) - (playerYFloatPart * kTileSize);
-            
-            // Weird workaround code
-            // If currentTileX = -0.5, it rounds to 0 which is technically in bounds, when it shouldn't be
-            // Hence, without this code, the first out of bounds area renders incorrectly.
-            int currentTileX;
-            if((float)player->playerX+i < 0){
-                currentTileX = -1;
-            }
-            else {
-                currentTileX = this->player->playerX+i;
-            }
+    for(int i = -512; i < 640; i+= 64){
+        for(int j = -320; j < 448; j+=64){
+            int currentSquareX = kMiddleOfScreenX + (i) - playerXoffset;
+            int currentSquareY = kMiddleOfScreenY + (j) - playerYoffset;
+      
 
-            int currentTileY;
-            if((float)player->playerY+j < 0){
-                currentTileY = -1;
-            } else {
-                 currentTileY = this->player->playerY+j;
-            }
+            int currentTileX =(this->player->playerX /64)  + (i / 64);
+
+
+           
+            int currentTileY = (this->player->playerY/64) + (j /64);
+       
             int currentTile = currentTileY*this->level->mapX+currentTileX;
         
             SDL_Rect currentTileDimensions {currentSquareX, currentSquareY,kTileSize,kTileSize};
 
-            // End of workaround tile code
 
             // Extract to tiny function?
             bool inMap = this->level->inMap(currentTileX, currentTileY);
@@ -175,8 +167,6 @@ void Game::drawMap(){
     
 }
 
-
-
 void Game::render(){
     SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
@@ -201,20 +191,13 @@ void Game::render(){
     
     renderPlayer(this->player);
     
-    std::pair<float,float> playerCoords(this->player->playerX, this->player->playerY);
+    std::pair<int,int> playerCoords(this->player->playerX, this->player->playerY);
     checkCollisions(playerCoords);
 
-    std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
-    for(int tile: PlayerAdjacent){
-        drawTileBox(tile);
-    }
-    // std::pair<float,float> entityCoords(entity->entityX, entity->entityY);
-    // checkCollisions(entityCoords);
-
-
-
-
-
+    // std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
+    // for(int tile: PlayerAdjacent){
+    //     // drawTileBox(tile);
+    // }
 
     SDL_RenderPresent(renderer);
 }
@@ -233,26 +216,23 @@ void Game::drawEntity(Entity * entity){
     entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
-    float xOffset = entity->entityX - this->player->playerX; 
-    float yOffset = entity->entityY -player->playerY;
+    int xOffset = entity->entityX - player->playerX; 
+    int yOffset = entity->entityY - player->playerY;
     // check if in range maybe?
-    int entityScreenX = kMiddleOfScreenX + xOffset*kTileSize;
-    int entityScreenY = kMiddleOfScreenY + yOffset*kTileSize;
+    int entityScreenX = kMiddleOfScreenX + xOffset;
+    int entityScreenY = kMiddleOfScreenY + yOffset;
 
-     SDL_Rect block { entityScreenX, entityScreenY,64,64};
+    SDL_Rect block { entityScreenX, entityScreenY,64,64};
     SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
  
 }
 
-
-// Change to take in any coords std::pair<int,int> coords
-// void Game::checkCollisions(Player * player){
-    void Game::checkCollisions(std::pair<float,float> coords){
+void Game::checkCollisions(std::pair<int,int> coords){
     bool isColliding = false;
-    int XMin = floorf(coords.first);
-    int XMax = ceil(coords.first);
-    int YMin = floorf(coords.second);
-    int YMax = ceil(coords.second);
+    int XMin = coords.first / 64;
+    int XMax = (coords.first+32) / 64;
+    int YMin = coords.second / 64;
+    int YMax = (coords.second + 32) / 64;
     if(this->level->wallMap.at(YMin*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMin);}
     if(this->level->wallMap.at(YMin*this->level->mapX+XMax) == 1){isColliding = true; drawCollisionbox(XMax,YMin);}
     if(this->level->wallMap.at(YMax*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMax);}
@@ -262,21 +242,21 @@ void Game::drawEntity(Entity * entity){
 // Used for debugging mainly
 void Game::drawCollisionbox(int boxX, int boxY){
 
-    float relativeBoxTopLeftX = boxX - player->playerX;
-    float relativeBoxTopLeftY = boxY - player->playerY;
+    int relativeBoxTopLeftX = (boxX  * kTileSize) - player->playerX;
+    int relativeBoxTopLeftY = (boxY  * kTileSize) - player->playerY;
 
     SDL_SetRenderDrawColor(renderer,255,255,0,255); // Yellow
     // Left border
-    SDL_Rect block {kMiddleOfScreenX + (int)(relativeBoxTopLeftX*64) , kMiddleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
+    SDL_Rect block {kMiddleOfScreenX + (int)(relativeBoxTopLeftX) , kMiddleOfScreenY + int(relativeBoxTopLeftY),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
      // Right border
-    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX*64) + 61 , kMiddleOfScreenY + int(relativeBoxTopLeftY*64),3,64}; // Top
+    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX) + 61 , kMiddleOfScreenY + int(relativeBoxTopLeftY),3,64}; // Top
     SDL_RenderFillRect(renderer, &block);
     // Top border
-    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX*64) , kMiddleOfScreenY + int(relativeBoxTopLeftY*64),64,3}; // Top
+    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX) , kMiddleOfScreenY + int(relativeBoxTopLeftY),64,3}; // Top
     SDL_RenderFillRect(renderer, &block);
     // Bottom border
-    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX*64) , kMiddleOfScreenY + int(relativeBoxTopLeftY*64)+64,64,3}; // Top
+    block  = {kMiddleOfScreenX + (int)(relativeBoxTopLeftX) , kMiddleOfScreenY + int(relativeBoxTopLeftY)+64,64,3}; // Top
     SDL_RenderFillRect(renderer, &block);
 }
 

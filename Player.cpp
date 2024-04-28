@@ -4,8 +4,8 @@
 
 // Plan to move this over to Entity eventually
 Player::Player(){
-    this->playerX = 8.0;
-    this->playerY = 5.0;
+    this->playerX = 64;
+    this->playerY = 64;
     this->direction = 0;
     this->playerIdle = true;
 }
