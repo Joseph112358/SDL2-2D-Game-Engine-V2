@@ -12,7 +12,7 @@ Player::Player(){
 
 std::vector<int> Player::getNeighborTiles(std::vector<int> map, int mapX){
     std::vector<int> res;
-    int playerPos = (int)(floorf(playerY)*mapX + floorf(playerX));
+    int playerPos = (playerY/64)*mapX + (playerX/64);
     res.push_back(playerPos - 1);
     res.push_back(playerPos + 1);
     res.push_back(playerPos + mapX);

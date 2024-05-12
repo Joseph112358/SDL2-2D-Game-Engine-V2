@@ -2,15 +2,22 @@
 #include <vector>
 #include <iostream>
 #include <SDL_image.h>
+#include <queue>
+
 
 class Entity {
     public:
         Entity(int x, int y);
-        float entityX;
-        float entityY;
+        int entityX;
+        int entityY;
         int height;
         int width;
         int direction;
-        void move(std::pair<int,int> coords);
-        void move(std::pair<int,int> coords, std::vector<int> map);
+
+
+        // To be optimised
+        bool moving;
+        std::pair<int, int> currentDestination;
+        std::queue<std::pair<int,int>> moveQueue;
+        void moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map);
 };

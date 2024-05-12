@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Entity.h"
 #include <cmath>
+#include <queue>
 #include <SDL_image.h>
 #include "AnimationHandler.h"
 SDL_Surface* atlasSurface = nullptr;
@@ -13,7 +14,7 @@ SDL_Surface* entitiesSurface = nullptr;
 SDL_Texture* atlasTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
 SDL_Texture* entitiesTexture = nullptr;
-Entity * entity = new Entity(128,128);
+Entity * entity = new Entity(64,64);
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -41,6 +42,18 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     isRunning = true;
 
     this->level = new Level();
+
+    std::pair<int,int> point(128, 128);
+    std::pair<int,int> point2(192, 128);
+    std::pair<int,int> point3(192, 192);
+    std::pair<int,int> point4(256, 192);
+    std::queue<std::pair<int,int>> coordQueue;
+    coordQueue.push(point);
+    coordQueue.push(point2);
+    coordQueue.push(point3);
+    coordQueue.push(point4);
+
+    entity->moveQueue = coordQueue;
     
 }
 
@@ -87,19 +100,17 @@ void Game::handleKeyboardInput(SDL_Event e){
 
 // Actually use this
 void Game::update(){
-    // updateEntites();
-    // switch(player->direction){
-    //     case 90:
-    //     player->playerX += 1;
-    // }
-
-    // if(player->direction == 90){
-    // }
-    std::pair<int,int> coords(this->player->playerX, this->player->playerY);
-    // entity->move(coords);
-
-    // std::vector<int> neighborCells = player->getNeighborCells(this->level->wallMap, this->level->mapX);
-    // entity->move(coords, neighborCells);
+    
+    // TODO move to function in entity
+    if(entity->moving){
+        entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
+    }
+    else if(entity->moveQueue.size() > 0){
+        entity->moving = true;
+        entity->currentDestination = entity->moveQueue.front();
+        entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
+        entity->moveQueue.pop();
+    }
 }
 
 void Game::drawMap(){
@@ -194,10 +205,10 @@ void Game::render(){
     std::pair<int,int> playerCoords(this->player->playerX, this->player->playerY);
     checkCollisions(playerCoords);
 
-    // std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
-    // for(int tile: PlayerAdjacent){
-    //     // drawTileBox(tile);
-    // }
+    std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
+    for(int tile: PlayerAdjacent){
+        drawTileBox(tile);
+    }
 
     SDL_RenderPresent(renderer);
 }
@@ -232,7 +243,7 @@ void Game::checkCollisions(std::pair<int,int> coords){
     int XMin = coords.first / 64;
     int XMax = (coords.first+32) / 64;
     int YMin = coords.second / 64;
-    int YMax = (coords.second + 32) / 64;
+    int YMax = (coords.second + 48) / 64;
     if(this->level->wallMap.at(YMin*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMin);}
     if(this->level->wallMap.at(YMin*this->level->mapX+XMax) == 1){isColliding = true; drawCollisionbox(XMax,YMin);}
     if(this->level->wallMap.at(YMax*this->level->mapX+XMin) == 1){isColliding = true; drawCollisionbox(XMin,YMax);}
