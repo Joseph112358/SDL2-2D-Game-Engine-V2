@@ -199,7 +199,7 @@ void Game::render(){
     renderPlayer(this->player);
     
     std::pair<int,int> playerCoords(this->player->playerX, this->player->playerY);
-   // checkCollisions(playerCoords);
+   checkCollisions(playerCoords);
 
     std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
     // for(int tile: PlayerAdjacent){
