@@ -7,3 +7,8 @@ TODO list
   * Player class have a renderPlayer(Renderer * renderer); function
   * Game class has a renderPlayer(Player * player) function.
   * Create a renderer class?
+
+
+* June 15th TODO
+  * Hit box: the whole entity, if a bullet or something collides with it, damage is done
+  * Collision box? At the players feet, dictates where entity can walk

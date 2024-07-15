@@ -9,4 +9,5 @@ class AnimationHandler {
         int animationFrame;
         int atlasYpos;
         void drawSprite(SDL_Renderer *renderer, Player * player);
+        void drawPlayerWalkBox(SDL_Renderer *renderer);
 };
