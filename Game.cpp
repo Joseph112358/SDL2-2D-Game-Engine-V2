@@ -71,29 +71,25 @@ void Game::handleEvents(){
 }
 
 void Game::handleKeyboardInput(SDL_Event e){
-     player->playerIdle = true;
+    player->playerIdle = true;
     int playerMovementSpeed = 16;
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_RIGHT]){
-        this->player->playerX += playerMovementSpeed;
-            player->direction = 90;
-            player->playerIdle = false;
-        // handlePlayerMovement()
+        player->playerIdle = false;
+        player->direction = 90;
+        player->handlePlayerMovement(90, this->level);
     }
     else if(keyState[SDL_SCANCODE_LEFT]){
-        this->player->playerX -= playerMovementSpeed;
-            player->direction = 270;
-            player->playerIdle = false;
+        player->handlePlayerMovement(270, this->level);
+        player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_UP]){
-        this->player->playerY -= playerMovementSpeed;
-            player->direction = 0;
-            player->playerIdle = false;
+        player->handlePlayerMovement(0, this->level);
+        player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_DOWN]){
-        this->player->playerY += playerMovementSpeed;
-            player->direction = 180;
-              player->playerIdle = false;
+        player->handlePlayerMovement(180, this->level);
+        player->playerIdle = false;
     }
 
 }
@@ -203,12 +199,12 @@ void Game::render(){
     renderPlayer(this->player);
     
     std::pair<int,int> playerCoords(this->player->playerX, this->player->playerY);
-    checkCollisions(playerCoords);
+   // checkCollisions(playerCoords);
 
     std::vector<int> PlayerAdjacent = player->getNeighborTiles(level->wallMap, level->mapX);
-    for(int tile: PlayerAdjacent){
-        drawTileBox(tile);
-    }
+    // for(int tile: PlayerAdjacent){
+    //     drawTileBox(tile);
+    // }
 
     SDL_RenderPresent(renderer);
 }
@@ -271,6 +267,7 @@ void Game::drawCollisionbox(int boxX, int boxY){
     SDL_RenderFillRect(renderer, &block);
 }
 
+// Takes in a Tile reference point and draws a box there
 void Game::drawTileBox(int tileIndex){
     std::pair<int,int> coords = arrayIntToPair(tileIndex);
     drawCollisionbox(coords.first, coords.second);

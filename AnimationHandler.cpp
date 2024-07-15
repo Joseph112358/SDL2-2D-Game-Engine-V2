@@ -40,4 +40,24 @@ void AnimationHandler::drawSprite(SDL_Renderer *renderer, Player * player){
 
     SDL_DestroyTexture(tmpTexture);
     SDL_FreeSurface(tmpSurface);
+
+    drawPlayerWalkBox(renderer);
+}
+
+
+void AnimationHandler::drawPlayerWalkBox(SDL_Renderer *renderer){
+
+    SDL_SetRenderDrawColor(renderer,255,0,0,255); // Yellow
+    // Left border
+    SDL_Rect block {512 , 352,3,32}; // Top
+    SDL_RenderFillRect(renderer, &block);
+     // Right border
+    block  = {512 + 61 , 352 ,3,32}; // Top
+    SDL_RenderFillRect(renderer, &block);
+    // Top border
+    block  = {512 , 352,64,3}; // Top
+    SDL_RenderFillRect(renderer, &block);
+    // Bottom border
+    block  = {512 , 352+32,64,3}; // Top
+    SDL_RenderFillRect(renderer, &block);
 }
