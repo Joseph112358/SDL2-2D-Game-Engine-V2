@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Level.h"
+#include "Animations.h"
 #include "cmath"
 
 
@@ -9,6 +10,7 @@ Player::Player(){
     this->playerY = 64;
     this->direction = 0;
     this->playerIdle = true;
+    this->animations = Animations();
 }
 
 void Player::handlePlayerMovement(int direction, Level * level){

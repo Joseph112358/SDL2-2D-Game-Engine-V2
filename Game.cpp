@@ -76,7 +76,6 @@ void Game::handleKeyboardInput(SDL_Event e){
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_RIGHT]){
         player->playerIdle = false;
-        player->direction = 90;
         player->handlePlayerMovement(90, this->level);
     }
     else if(keyState[SDL_SCANCODE_LEFT]){
