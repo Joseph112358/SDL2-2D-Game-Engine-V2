@@ -7,6 +7,7 @@
 #include "Level.h"
 #include "Player.h"
 #include "Entity.h"
+#include "UserInterface.h"
 class Game {
     public:
         Game();
@@ -15,6 +16,9 @@ class Game {
         Level * level;
 
         Player * player;
+
+        UserInterface * userInterface;
+
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
         // Main core functions (will be public to main)
@@ -42,6 +46,7 @@ class Game {
     private:
         bool isRunning;
         void handleKeyboardInput(SDL_Event e);
+        void handleKeyInput(SDL_Event e);
         SDL_Window *window;
         SDL_Renderer *renderer; 
 };

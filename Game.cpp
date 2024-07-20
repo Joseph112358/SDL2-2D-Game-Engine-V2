@@ -4,6 +4,7 @@
 #include "Level.h"
 #include "Player.h"
 #include "Entity.h"
+#include "UserInterface.h"
 #include <cmath>
 #include <queue>
 #include <SDL_image.h>
@@ -30,6 +31,7 @@ Game::~Game(){
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
 
     this->player = new Player();
+    this->userInterface = new UserInterface();
 
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
@@ -65,10 +67,20 @@ void Game::handleEvents(){
             isRunning = false;
             break;
     }
-
-     handleKeyboardInput(event);
+    
+    // TODO: Rename functions so function / purpose is more understandable
+     handleKeyboardInput(event); // Handle movement
+     handleKeyInput(event);
 
 }
+
+void Game::handleKeyInput(SDL_Event e){
+    if(e.type == SDL_KEYDOWN && SDL_PollEvent(&e)){
+        if(e.key.keysym.sym == SDLK_m){
+        this->userInterface->toggleShown();
+        }
+    }
+ }
 
 void Game::handleKeyboardInput(SDL_Event e){
     player->playerIdle = true;
@@ -90,7 +102,6 @@ void Game::handleKeyboardInput(SDL_Event e){
         player->handlePlayerMovement(180, this->level);
         player->playerIdle = false;
     }
-
 }
 
 // Actually use this
@@ -205,6 +216,9 @@ void Game::render(){
     //     drawTileBox(tile);
     // }
 
+    if(this->userInterface->isShown){
+        this->userInterface->drawUI(renderer);
+    }
     SDL_RenderPresent(renderer);
 }
 
