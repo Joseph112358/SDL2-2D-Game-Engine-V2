@@ -8,9 +8,9 @@
 class UserInterface {
     public:
         UserInterface();
-        bool isShown;
+        bool isInventoryShown;
 
 
-        void toggleShown();
-        void drawUI(SDL_Renderer * renderer);
+        void toggleInventoryShown();
+        void drawInventoryMenu(SDL_Renderer * renderer);
 };

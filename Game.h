@@ -42,6 +42,7 @@ class Game {
         std::pair<int,int> arrayIntToPair(int arrayLocation);
         // End of helper functions
         bool running() {return isRunning;}
+        bool inRange( std::pair<int,int> playerPoint, std::pair<int,int> itemPoint);
 
     private:
         bool isRunning;
