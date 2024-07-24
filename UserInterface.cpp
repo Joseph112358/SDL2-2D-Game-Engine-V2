@@ -3,16 +3,17 @@
 #include <SDL.h>
 
 UserInterface::UserInterface(){
-        this->isShown = false;
+        this->isInventoryShown = false;
 }
 
 
-void UserInterface::drawUI(SDL_Renderer * renderer){
+void UserInterface::drawInventoryMenu(SDL_Renderer * renderer){
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     SDL_Rect block { 64, 64,64,64};
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Set to red
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 128); // Set to red
     SDL_RenderFillRect(renderer, &block);
 }
 
-void UserInterface::toggleShown(){
-    isShown = !isShown;
+void UserInterface::toggleInventoryShown(){
+    isInventoryShown = !isInventoryShown;
 }

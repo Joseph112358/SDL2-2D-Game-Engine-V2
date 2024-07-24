@@ -1,4 +1,5 @@
 #include "Game.h"
+#include <math.h> 
 #include <iostream>
 #include <vector>
 #include "Level.h"
@@ -77,7 +78,7 @@ void Game::handleEvents(){
 void Game::handleKeyInput(SDL_Event e){
     if(e.type == SDL_KEYDOWN && SDL_PollEvent(&e)){
         if(e.key.keysym.sym == SDLK_m){
-        this->userInterface->toggleShown();
+        this->userInterface->toggleInventoryShown();
         }
     }
  }
@@ -120,7 +121,6 @@ void Game::update(){
 }
 
 void Game::drawMap(){
-
     int playerXoffset = player->playerX % 64;
     int playerYoffset = player->playerY % 64;
     // Camera system works, but is a little unintuitive
@@ -164,7 +164,20 @@ void Game::drawMap(){
 
             if(this->level->itemMap.at(currentTile) == 1){
                 SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
-                SDL_Rect atlasCoords {0,0,16,16};
+
+                // Test code
+                int atlasOffset;
+
+                std::pair<int, int> itemCoords = {currentTileX *64, currentTileY* 64};
+                std::pair<int, int> playerCoords = {player->playerX, player->playerY};
+                if (inRange(playerCoords,itemCoords)){
+                     atlasOffset = 16;
+                } else {
+                    atlasOffset = 0;
+                }
+
+                
+                SDL_Rect atlasCoords {atlasOffset,0,16,16};
                 SDL_RenderCopy(renderer,itemsTexture,&atlasCoords,&currentTileDimensions);
               }
 
@@ -187,6 +200,7 @@ void Game::drawMap(){
 void Game::render(){
     SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
+
 
     drawMap();
     //   Draw floor
@@ -216,8 +230,8 @@ void Game::render(){
     //     drawTileBox(tile);
     // }
 
-    if(this->userInterface->isShown){
-        this->userInterface->drawUI(renderer);
+    if(this->userInterface->isInventoryShown){
+        this->userInterface->drawInventoryMenu(renderer);
     }
     SDL_RenderPresent(renderer);
 }
@@ -302,4 +316,9 @@ std::pair<int,int> Game::arrayIntToPair(int arrayLocation){
 int coordsToArrayInt(std::pair<int, int> coords){
     int mapX = 17;
     return coords.first + mapX*coords.second;
+}
+
+bool Game::inRange(std::pair<int,int> playerPoint , std::pair<int,int> itemPoint) {
+    double distance =sqrt(pow( playerPoint.first - itemPoint.first, 2) + pow(playerPoint.second - itemPoint.second, 2));
+    return (distance < 91);
 }
