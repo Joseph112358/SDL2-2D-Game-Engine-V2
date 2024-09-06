@@ -8,6 +8,7 @@ class AnimationHandler {
       public:
         AnimationHandler();
         int currentFrame;
+        int delay;
         void drawSprite(SDL_Renderer *renderer, Player * player);
         void drawPlayerWalkBox(SDL_Renderer *renderer);
 };

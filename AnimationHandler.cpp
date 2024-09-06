@@ -4,6 +4,7 @@
 
 AnimationHandler::AnimationHandler(){
     this->currentFrame = 1;
+    this->delay = 0;
 }
 
 void AnimationHandler::drawSprite(SDL_Renderer *renderer, Player * player){
@@ -31,7 +32,13 @@ void AnimationHandler::drawSprite(SDL_Renderer *renderer, Player * player){
             break;
     }
 
+    // Animations too fast, not sure if delta related
+    delay == 2? delay = 0 : delay++;
+    if(delay == 0 ){
     currentFrame == 5? currentFrame = 1 : currentFrame++;
+    }
+
+
     if(player->playerIdle) frames = animations.idleFrames;
     std::pair<int,int> animationCoords = frames.at(currentFrame);
 
