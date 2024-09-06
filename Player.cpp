@@ -3,12 +3,12 @@
 #include "Animations.h"
 #include "cmath"
 
-int speed = 8;
 // Plan to move this over to Entity eventually
 Player::Player(){
     this->playerX = 64;
     this->playerY = 64;
     this->direction = 0;
+    this->speed = 8;
     this->playerIdle = true;
     this->animations = Animations();
 }

@@ -103,6 +103,9 @@ void Game::handleKeyboardInput(SDL_Event e){
         player->handlePlayerMovement(180, this->level);
         player->playerIdle = false;
     }
+    if(keyState[SDL_SCANCODE_LSHIFT]){
+        player->speed = 16;
+    } else { player->speed = 8;}
 }
 
 // Actually use this

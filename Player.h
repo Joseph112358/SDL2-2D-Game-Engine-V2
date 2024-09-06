@@ -11,6 +11,7 @@ class Player {
         Player();
         int playerX;
         int playerY;
+        int speed;
         int direction;
         bool playerIdle;
         Animations animations;
