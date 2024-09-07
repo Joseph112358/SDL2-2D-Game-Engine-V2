@@ -80,6 +80,12 @@ void Game::handleKeyInput(SDL_Event e){
         if(e.key.keysym.sym == SDLK_m){
         this->userInterface->toggleInventoryShown();
         }
+        if(e.key.keysym.sym == SDLK_e){
+            // Get current floor tile and change its state?
+            std::pair<int,int> playerCoords = std::make_pair(player->playerX /64, player->playerY /64);
+            int tile = Game::coordsToArrayInt(playerCoords);
+            this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
+        }
     }
  }
 
@@ -310,13 +316,13 @@ void Game::clean(){
 }
 
 std::pair<int,int> Game::arrayIntToPair(int arrayLocation){
-    int mapX = 17;
+    int mapX = 17; // This should not be hard coded
     int y = arrayLocation/mapX;
     int x = arrayLocation%mapX;
     return std::pair<int,int> {x, y};
 }
 
-int coordsToArrayInt(std::pair<int, int> coords){
+int Game::coordsToArrayInt(std::pair<int, int> coords){
     int mapX = 17;
     return coords.first + mapX*coords.second;
 }
