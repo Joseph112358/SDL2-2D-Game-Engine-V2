@@ -10,18 +10,22 @@
 #include <queue>
 #include <SDL_image.h>
 #include "AnimationHandler.h"
+// TODO move all textures over to one atlas
+// A texture loader might not be a bad idea?
 SDL_Surface* atlasSurface = nullptr;
 SDL_Surface* itemsSurface = nullptr;
 SDL_Surface* entitiesSurface = nullptr;
+SDL_Surface* floorSurface = nullptr;
 SDL_Texture* atlasTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
 SDL_Texture* entitiesTexture = nullptr;
+SDL_Texture* floorTexture = nullptr;
 Entity * entity = new Entity(64,64);
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
-const int kTileSize = 64;
+const int TILE_UNIT_SIZE = 64;
 
 Game::Game(){
 };
@@ -130,14 +134,17 @@ void Game::update(){
 }
 
 void Game::drawMap(){
-    int playerXoffset = player->playerX % 64;
-    int playerYoffset = player->playerY % 64;
+    // I think this is because the players coords are in multiples of 64, and need to be scaled down (to e.g. 3)
+    int playerXoffset = player->playerX % TILE_UNIT_SIZE;
+    int playerYoffset = player->playerY % TILE_UNIT_SIZE;
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
     atlasSurface = IMG_Load("res/Atlas3.png");
     atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
     itemsSurface = IMG_Load("res/items-sprite-v1.png");
     itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
+    floorSurface = IMG_Load("res/desert.png");
+    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
     for(int i = -512; i < 640; i+= 64){
         for(int j = -320; j < 448; j+=64){
             int currentSquareX = kMiddleOfScreenX + (i) - playerXoffset;
@@ -152,7 +159,7 @@ void Game::drawMap(){
        
             int currentTile = currentTileY*this->level->mapX+currentTileX;
         
-            SDL_Rect currentTileDimensions {currentSquareX, currentSquareY,kTileSize,kTileSize};
+            SDL_Rect currentTileDimensions {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
 
 
             // Extract to tiny function?
@@ -160,19 +167,20 @@ void Game::drawMap(){
             if(inMap){
             // Draw Floor
             if(this->level->floorMap.at(currentTile) == 1){
-                SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
-                SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
-                SDL_RenderFillRect(renderer, &block);
+
+                SDL_Rect floorAtlasCoords {16, 0, 16, 16};
+                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
+                SDL_RenderCopy(renderer,floorTexture,&floorAtlasCoords,&currentTileDimensions);
             } else {
-                SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
-                SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-                SDL_RenderFillRect(renderer, &block);
+                SDL_Rect floorAtlasCoords {32, 0, 16, 16};
+                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
+                SDL_RenderCopy(renderer,floorTexture,&floorAtlasCoords,&currentTileDimensions);
             }
 
             // Draw items
 
             if(this->level->itemMap.at(currentTile) == 1){
-                SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
+                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
 
                 // Test code
                 int atlasOffset;
@@ -192,13 +200,13 @@ void Game::drawMap(){
 
             // Draw Walls
             if(this->level->wallMap.at(currentTile) == 1){
-                SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
+                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
                 SDL_RenderCopy(renderer,atlasTexture,NULL,&currentTileDimensions);
               }
             }
             else {
                 SDL_SetRenderDrawColor(renderer,0,0,0,255);
-                SDL_Rect block {currentSquareX, currentSquareY,kTileSize,kTileSize};
+                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
                 SDL_RenderFillRect(renderer, &block);
             }
         }
@@ -224,9 +232,11 @@ void Game::render(){
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(itemsTexture);
     SDL_DestroyTexture(entitiesTexture);
+     SDL_DestroyTexture(floorTexture);
     SDL_FreeSurface(atlasSurface);
     SDL_FreeSurface(itemsSurface);
     SDL_FreeSurface(entitiesSurface);
+    SDL_FreeSurface(floorSurface);
 
     
     renderPlayer(this->player);
@@ -285,8 +295,8 @@ void Game::checkCollisions(std::pair<int,int> coords){
 // Used for debugging mainly
 void Game::drawCollisionbox(int boxX, int boxY){
 
-    int relativeBoxTopLeftX = (boxX  * kTileSize) - player->playerX;
-    int relativeBoxTopLeftY = (boxY  * kTileSize) - player->playerY;
+    int relativeBoxTopLeftX = (boxX  * TILE_UNIT_SIZE) - player->playerX;
+    int relativeBoxTopLeftY = (boxY  * TILE_UNIT_SIZE) - player->playerY;
 
     SDL_SetRenderDrawColor(renderer,255,255,0,255); // Yellow
     // Left border
