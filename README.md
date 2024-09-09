@@ -1,14 +1,12 @@
-TODO list
-* Create an "NPC" entity, write a script for path finding
-* Fix diagonal behaviour so distance travelled is constant.
-* Interactable map. E.g. sow plants, open chest, use terminal
+Welcome to my nth pet project!
 
-* Decide on how to do rendering, either:
-  * Player class have a renderPlayer(Renderer * renderer); function
-  * Game class has a renderPlayer(Player * player) function.
-  * Create a renderer class?
+TL;DR
+It's a 2D game / game engine.
 
+It currently handles and supports: rendering, animation, player movement and basic collision detection
+(although I plan to add more)
 
-* June 15th TODO
-  * Hit box: the whole entity, if a bullet or something collides with it, damage is done
-  * Collision box? At the players feet, dictates where entity can walk
+Tech stack / requirements
+* C++ compiler
+* SDL2 graphics library
+* A build tool (e.g. Makefile or CMake)
