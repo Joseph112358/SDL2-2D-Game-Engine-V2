@@ -20,7 +20,6 @@ SDL_Texture* atlasTexture = nullptr;
 SDL_Texture* itemsTexture = nullptr;
 SDL_Texture* entitiesTexture = nullptr;
 SDL_Texture* floorTexture = nullptr;
-Entity * entity = new Entity(64,64);
 AnimationHandler * animationHandler = new AnimationHandler();
 
 const Uint8 * keyState;
@@ -37,6 +36,10 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
+    Entity * entity = new Entity(64,64);
+    Entity * ent = new Entity(64,128);
+    this->entities.push_back(*entity);
+    this->entities.push_back(*ent);
 
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
@@ -50,17 +53,17 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->level = new Level();
 
-    std::pair<int,int> point(128, 128);
-    std::pair<int,int> point2(192, 128);
-    std::pair<int,int> point3(192, 192);
-    std::pair<int,int> point4(256, 192);
-    std::queue<std::pair<int,int>> coordQueue;
-    coordQueue.push(point);
-    coordQueue.push(point2);
-    coordQueue.push(point3);
-    coordQueue.push(point4);
+    // std::pair<int,int> point(128, 128);
+    // std::pair<int,int> point2(192, 128);
+    // std::pair<int,int> point3(192, 192);
+    // std::pair<int,int> point4(256, 192);
+    // std::queue<std::pair<int,int>> coordQueue;
+    // coordQueue.push(point);
+    // coordQueue.push(point2);
+    // coordQueue.push(point3);
+    // coordQueue.push(point4);
 
-    entity->moveQueue = coordQueue;
+    // entity->moveQueue = coordQueue;
     
 }
 
@@ -122,15 +125,15 @@ void Game::handleKeyboardInput(SDL_Event e){
 void Game::update(){
     
     // TODO move to function in entity
-    if(entity->moving){
-        entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
-    }
-    else if(entity->moveQueue.size() > 0){
-        entity->moving = true;
-        entity->currentDestination = entity->moveQueue.front();
-        entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
-        entity->moveQueue.pop();
-    }
+    // if(entity->moving){
+    //     entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
+    // }
+    // else if(entity->moveQueue.size() > 0){
+    //     entity->moving = true;
+    //     entity->currentDestination = entity->moveQueue.front();
+    //     entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
+    //     entity->moveQueue.pop();
+    // }
 }
 
 void Game::drawMap(){
@@ -224,15 +227,12 @@ void Game::render(){
     //   Draw floor items
     //   Draw walls
 
-
-    // Draw entites (eventually)
-    // drawEntities(Level * level)... for entity in levels ...
-    drawEntity(entity);
+    drawEntities(this->entities);
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(itemsTexture);
     SDL_DestroyTexture(entitiesTexture);
-     SDL_DestroyTexture(floorTexture);
+    SDL_DestroyTexture(floorTexture);
     SDL_FreeSurface(atlasSurface);
     SDL_FreeSurface(itemsSurface);
     SDL_FreeSurface(entitiesSurface);
@@ -261,16 +261,20 @@ void Game::renderPlayer(Player * player){
   
 }
 
+void Game::drawEntities(std::vector<Entity>& entities){
+    for (Entity& entity : entities) {
+        drawEntity(entity);
+    }
+}
 
-// Eventually replace with a draw active items maybe?
-void Game::drawEntity(Entity * entity){
+void Game::drawEntity(Entity& entity){
 
     entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
     entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
-    int xOffset = entity->entityX - player->playerX; 
-    int yOffset = entity->entityY - player->playerY;
+    int xOffset = entity.entityX - player->playerX; 
+    int yOffset = entity.entityY - player->playerY;
     // check if in range maybe?
     int entityScreenX = kMiddleOfScreenX + xOffset;
     int entityScreenY = kMiddleOfScreenY + yOffset;
