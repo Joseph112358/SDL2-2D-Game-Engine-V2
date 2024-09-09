@@ -19,6 +19,8 @@ class Game {
 
         UserInterface * userInterface;
 
+        std::vector<Entity> entities;
+
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
         // Main core functions (will be public to main)
@@ -29,7 +31,8 @@ class Game {
         void drawMap();
         void drawWalls();
         void drawFloor();
-        void drawEntity(Entity * entity);
+        void drawEntity(Entity& entity);
+        void drawEntities(std::vector<Entity>& entities);
     
         void renderPlayer(Player * player);
         void checkCollisions(std::pair<int,int> coords);

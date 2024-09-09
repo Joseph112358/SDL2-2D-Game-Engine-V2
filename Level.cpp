@@ -49,6 +49,8 @@ Level::Level(){
          };
 }
 
+// Create level from config file?
+
 
 Level::Level(int mapX, int mapY, std::vector<int> floorMap,std::vector<int> wallMap){
    this->mapX = mapX;
