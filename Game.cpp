@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Sprite.h"
 #include <math.h> 
 #include <iostream>
 #include <vector>
@@ -32,12 +33,14 @@ Game::~Game(){
 
 };
 
+
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
+    Sprite * enemy_sprite = new Sprite(0,0);
 
     this->player = new Player();
     this->userInterface = new UserInterface();
-    Entity * entity = new Entity(64,64);
-    Entity * ent = new Entity(64,128);
+    Entity * entity = new Entity(64,256, sprite);
+    Entity * ent = new Entity(128,320, sprite);
     this->entities.push_back(*entity);
     this->entities.push_back(*ent);
 
@@ -123,6 +126,10 @@ void Game::handleKeyboardInput(SDL_Event e){
 
 // Actually use this
 void Game::update(){
+
+    for (Entity& entity : entities) {
+        entity.update();
+    }
     
     // TODO move to function in entity
     // if(entity->moving){
@@ -261,12 +268,14 @@ void Game::renderPlayer(Player * player){
   
 }
 
+// This should also probably not be here
 void Game::drawEntities(std::vector<Entity>& entities){
     for (Entity& entity : entities) {
         drawEntity(entity);
     }
 }
 
+// This should not be here
 void Game::drawEntity(Entity& entity){
 
     entitiesSurface = IMG_Load("res/entities-sprite-v1.png");

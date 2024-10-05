@@ -8,6 +8,7 @@
 #include "Player.h"
 #include "Entity.h"
 #include "UserInterface.h"
+#include "Sprite.h"
 class Game {
     public:
         Game();
