@@ -1,15 +1,21 @@
 #include "Entity.h"
+#include "Sprite.h"
 #include <cmath>
 
 int entityMoveSpeed = 4;
-Entity::Entity(int x, int y){
+Entity::Entity(int x, int y, Sprite * sprite){
     this->entityX =  x;
     this->entityY =  y;
     this->direction = 1;
     this->moving = false;
+    this->sprite = sprite;
 }
 
 // Maybe add a list of points to visit / process?
+
+void Entity::update(){
+    this->entityX = this->entityX += 2;
+}
 
 // Is map even needed?
 void Entity::moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map){
