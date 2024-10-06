@@ -39,8 +39,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
-    Entity * entity = new Entity(64,256, sprite);
-    Entity * ent = new Entity(128,320, sprite);
+    Entity * entity = new Entity(64,256, enemy_sprite);
+    Entity * ent = new Entity(128,320, enemy_sprite);
     this->entities.push_back(*entity);
     this->entities.push_back(*ent);
 
