@@ -1,6 +1,6 @@
 #include <iostream>
 #include <SDL.h>
-#include "Player.h"
+#include "../Player.h"
 #include "Animations.h"
 
 // Currently only for Player, but will be rewritten to support multiple sprite later.

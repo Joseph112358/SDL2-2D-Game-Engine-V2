@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Level.h"
-#include "Animations.h"
+#include "animations/Animations.h"
 #include "cmath"
 
 // Plan to move this over to Entity eventually

@@ -10,7 +10,7 @@
 #include <cmath>
 #include <queue>
 #include <SDL_image.h>
-#include "AnimationHandler.h"
+#include "animations/AnimationHandler.h"
 // TODO move all textures over to one atlas
 // A texture loader might not be a bad idea?
 SDL_Surface* atlasSurface = nullptr;
@@ -40,9 +40,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     this->player = new Player();
     this->userInterface = new UserInterface();
     Entity * entity = new Entity(64,256, enemy_sprite);
-    Entity * ent = new Entity(128,320, enemy_sprite);
     this->entities.push_back(*entity);
-    this->entities.push_back(*ent);
 
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
