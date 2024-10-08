@@ -14,7 +14,7 @@ Entity::Entity(int x, int y, Sprite * sprite){
 // Maybe add a list of points to visit / process?
 
 void Entity::update(){
-    this->entityX = this->entityX += 2;
+    // this->entityX = this->entityX += 2;
 }
 
 // Is map even needed?

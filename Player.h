@@ -3,7 +3,7 @@
 #include <iostream>
 #include <SDL_image.h>
 #include "Level.h"
-#include "Animations.h"
+#include "animations/Animations.h"
 
 // Plan to move this over to Entity eventually
 class Player {
