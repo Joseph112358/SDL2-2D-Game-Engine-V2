@@ -39,7 +39,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
-    Entity * entity = new Entity(64,256, enemy_sprite);
+    Entity * entity = new Entity(320,320, enemy_sprite);
     this->entities.push_back(*entity);
 
     int flags = 0; 
@@ -147,12 +147,7 @@ void Game::drawMap(){
     int playerYoffset = player->playerY % TILE_UNIT_SIZE;
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
-    atlasSurface = IMG_Load("res/Atlas3.png");
-    atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
-    itemsSurface = IMG_Load("res/items-sprite-v1.png");
-    itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
-    floorSurface = IMG_Load("res/desert.png");
-    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+
     for(int i = -512; i < 640; i+= 64){
         for(int j = -320; j < 448; j+=64){
             int currentSquareX = kMiddleOfScreenX + (i) - playerXoffset;
@@ -177,11 +172,11 @@ void Game::drawMap(){
             if(this->level->floorMap.at(currentTile) == 1){
 
                 SDL_Rect floorAtlasCoords {16, 0, 16, 16};
-                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
+                // SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
                 SDL_RenderCopy(renderer,floorTexture,&floorAtlasCoords,&currentTileDimensions);
             } else {
                 SDL_Rect floorAtlasCoords {32, 0, 16, 16};
-                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
+               // SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
                 SDL_RenderCopy(renderer,floorTexture,&floorAtlasCoords,&currentTileDimensions);
             }
 
@@ -193,12 +188,17 @@ void Game::drawMap(){
                 // Test code
                 int atlasOffset;
 
+                // TODO: Rewrite this code so it makes more sense and is scalable
                 std::pair<int, int> itemCoords = {currentTileX *64, currentTileY* 64};
                 std::pair<int, int> playerCoords = {player->playerX, player->playerY};
                 if (inRange(playerCoords,itemCoords)){
                      atlasOffset = 16;
+                     this->userInterface->isInteractButtonShown = true;
+                    //  this->userInterface->drawInteractButton(itemsTexture, renderer);
+
                 } else {
                     atlasOffset = 0;
+                    this->userInterface->isInteractButtonShown = false;
                 }
 
                 
@@ -220,19 +220,27 @@ void Game::drawMap(){
         }
     }
     
+    if(this->userInterface->isInteractButtonShown){
+          this->userInterface->drawInteractButton(itemsTexture, renderer);
+    }
 }
 
 void Game::render(){
     SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
 
+    atlasSurface = IMG_Load("res/Atlas3.png");
+    atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
+    itemsSurface = IMG_Load("res/items-sprite-v1.png");
+    itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
+    floorSurface = IMG_Load("res/desert.png");
+    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+
 
     drawMap();
     //   Draw floor
     //   Draw floor items
     //   Draw walls
-
-    drawEntities(this->entities);
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(itemsTexture);
@@ -242,6 +250,9 @@ void Game::render(){
     SDL_FreeSurface(itemsSurface);
     SDL_FreeSurface(entitiesSurface);
     SDL_FreeSurface(floorSurface);
+
+
+    drawEntities(this->entities);
 
     
     renderPlayer(this->player);
