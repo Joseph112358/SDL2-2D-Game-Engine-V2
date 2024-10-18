@@ -8,7 +8,9 @@
     // Objects in room
     // Aspirational: Room dimensions
 
-Level::Level(){
+Level::Level(int levelCode){
+
+   if(levelCode == 0){
    this->mapX = 17;
    this->mapY = 10;
    this->wallMap = * new std::vector<int> 
@@ -47,6 +49,35 @@ Level::Level(){
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,                    
          };
+   }
+   else {
+       this->mapX = 6;
+      this->mapY = 6;
+      this->wallMap = * new std::vector<int> 
+         {1,1,1,1,1,1,
+          1,0,0,0,0,1,
+          1,0,0,0,0,1,
+          1,0,0,0,0,1,
+          1,0,0,0,0,1,
+          1,1,1,1,1,1,                
+         };
+   this->floorMap = * new std::vector<int> 
+         {1,0,1,0,1,0,
+          1,0,1,0,1,0,
+          1,0,1,0,1,0,
+          1,0,1,0,1,0,
+          1,0,1,0,1,0,
+          1,0,1,0,1,0,                
+         };
+   this->itemMap = * new std::vector<int> 
+         {0,0,0,0,0,0,
+         0,0,0,0,0,0,
+         0,0,0,0,0,0,
+         0,0,0,0,0,0,
+         0,0,0,0,0,0,
+         0,0,0,0,0,0,
+         };
+   }
 }
 
 // Create level from config file?

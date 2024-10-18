@@ -52,7 +52,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     renderer = SDL_CreateRenderer(window, -1, 0 );
     isRunning = true;
 
-    this->level = new Level();
+    this->level = new Level(0);
 
     // std::pair<int,int> point(128, 128);
     // std::pair<int,int> point2(192, 128);
@@ -148,8 +148,8 @@ void Game::drawMap(){
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
 
-    for(int i = -512; i < 640; i+= 64){
-        for(int j = -320; j < 448; j+=64){
+    for(int i = (-8 * TILE_UNIT_SIZE); i < (10* TILE_UNIT_SIZE); i+= 64){
+        for(int j = (-5 *TILE_UNIT_SIZE); j < (7* TILE_UNIT_SIZE); j+=64){
             int currentSquareX = kMiddleOfScreenX + (i) - playerXoffset;
             int currentSquareY = kMiddleOfScreenY + (j) - playerYoffset;
       
@@ -348,14 +348,14 @@ void Game::clean(){
 }
 
 std::pair<int,int> Game::arrayIntToPair(int arrayLocation){
-    int mapX = 17; // This should not be hard coded
+    int mapX = this->level->mapX; // This should not be hard coded
     int y = arrayLocation/mapX;
     int x = arrayLocation%mapX;
     return std::pair<int,int> {x, y};
 }
 
 int Game::coordsToArrayInt(std::pair<int, int> coords){
-    int mapX = 17;
+    int mapX = this->level->mapX;
     return coords.first + mapX*coords.second;
 }
 
