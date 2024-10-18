@@ -4,7 +4,7 @@
 
 UserInterface::UserInterface(){
         this->isInventoryShown = false;
-        this->isInteractButtonShown = true;
+        this->isInteractButtonShown = false;
 }
 
 // Temporary fix for prototyping, really need to overhaul how textures are loaded and accessed
