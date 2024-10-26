@@ -40,6 +40,7 @@ Game::~Game(){
 
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
+
     Sprite * enemy_sprite = new Sprite(32,0,32,32);
 
     this->player = new Player();
@@ -136,6 +137,7 @@ void Game::update(){
     delete entity;
     }
 
+    entities.clear();
     clearEntities = false;
     }
 
@@ -236,12 +238,17 @@ void Game::render(){
     itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
     floorSurface = IMG_Load("res/desert.png");
     floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
+    entitiesSurface = IMG_Load("res/misc.png");
+    entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
 
     drawMap();
     //   Draw floor
     //   Draw floor items
     //   Draw walls
+
+    drawEntities(this->entities);
+    SDL_Log("Array size: %d" , entities.size());
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(itemsTexture);
@@ -251,9 +258,6 @@ void Game::render(){
     SDL_FreeSurface(itemsSurface);
     SDL_FreeSurface(entitiesSurface);
     SDL_FreeSurface(floorSurface);
-
-
-    drawEntities(this->entities);
 
     
     renderPlayer(this->player);
@@ -283,6 +287,7 @@ void Game::drawEntities(std::vector<Entity*> entities){
     for (Entity* entity : entities) {
         drawEntity(entity);
     }
+
 }
 
 
@@ -295,10 +300,6 @@ void Game::drawEntities(std::vector<Entity*> entities){
 
 // This should not be here
 void Game::drawEntity(Entity * entity){
-
-    // entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
-    entitiesSurface = IMG_Load("res/misc.png");
-    entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
     int xOffset = entity->entityX - player->playerX; 
