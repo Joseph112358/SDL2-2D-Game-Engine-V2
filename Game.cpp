@@ -24,6 +24,10 @@ SDL_Texture* entitiesTexture = nullptr;
 SDL_Texture* floorTexture = nullptr;
 AnimationHandler * animationHandler = new AnimationHandler();
 
+// Entity * entity = nullptr;
+
+bool clearEntities;
+
 const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
 const int TILE_UNIT_SIZE = 64;
@@ -47,8 +51,9 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->interactablesList = std::list<int>();
 
-    Entity * entity = new Entity(320,320, enemy_sprite);
-    this->entities.push_back(*entity);
+    // Entity * entity = new Entity(320,320, enemy_sprite);
+    Entity * entity_first = new Entity(320,320, enemy_sprite);
+    this->entities.push_back(entity_first);
 
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
@@ -61,18 +66,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     isRunning = true;
 
     this->level = new Level(0);
-
-    // std::pair<int,int> point(128, 128);
-    // std::pair<int,int> point2(192, 128);
-    // std::pair<int,int> point3(192, 192);
-    // std::pair<int,int> point4(256, 192);
-    // std::queue<std::pair<int,int>> coordQueue;
-    // coordQueue.push(point);
-    // coordQueue.push(point2);
-    // coordQueue.push(point3);
-    // coordQueue.push(point4);
-
-    // entity->moveQueue = coordQueue;
     
 }
 
@@ -104,7 +97,7 @@ void Game::handleKeyInput(SDL_Event e){
             // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
         }
          if(e.key.keysym.sym == SDLK_y){
-            this->entities.clear();
+            clearEntities = true;
          }
     }
  }
@@ -137,20 +130,16 @@ void Game::handleKeyboardInput(SDL_Event e){
 // Actually use this
 void Game::update(){
 
-    for (Entity& entity : entities) {
-        entity.update();
+    if(clearEntities){
+
+    for (auto& entity : entities) {
+    delete entity;
     }
+
+    clearEntities = false;
+    }
+
     
-    // TODO move to function in entity
-    // if(entity->moving){
-    //     entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
-    // }
-    // else if(entity->moveQueue.size() > 0){
-    //     entity->moving = true;
-    //     entity->currentDestination = entity->moveQueue.front();
-    //     entity->moveToGivenPoint(entity->currentDestination, level->wallMap);
-    //     entity->moveQueue.pop();
-    // }
 }
 
 void Game::drawMap(){
@@ -289,31 +278,31 @@ void Game::renderPlayer(Player * player){
   
 }
 
-// This should also probably not be here
-void Game::drawEntities(std::vector<Entity>& entities){
-    for (Entity& entity : entities) {
+
+void Game::drawEntities(std::vector<Entity*> entities){
+    for (Entity* entity : entities) {
         drawEntity(entity);
     }
 }
 
 
-// This needs a destroy entity method because it causing memory leaks
+// CAUTION: causes major memory leak
  void Game::createNewEntity(int x_pos, int y_pos){
     Sprite * enemy_sprite = new Sprite(32,0,32,32);
     Entity * entity = new Entity(x_pos, y_pos, enemy_sprite);
-    this->entities.push_back(*entity);
+    this->entities.push_back(entity);
  }
 
 // This should not be here
-void Game::drawEntity(Entity& entity){
+void Game::drawEntity(Entity * entity){
 
     // entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
-     entitiesSurface = IMG_Load("res/misc.png");
+    entitiesSurface = IMG_Load("res/misc.png");
     entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
-    int xOffset = entity.entityX - player->playerX; 
-    int yOffset = entity.entityY - player->playerY;
+    int xOffset = entity->entityX - player->playerX; 
+    int yOffset = entity->entityY - player->playerY;
     // check if in range maybe?
     int entityScreenX = kMiddleOfScreenX + xOffset;
     int entityScreenY = kMiddleOfScreenY + yOffset;
@@ -321,8 +310,8 @@ void Game::drawEntity(Entity& entity){
     SDL_Rect block { entityScreenX, entityScreenY,64,64};
     
     // Get the correct texture from the atlas
-    std::cout<< entity.sprite->atlas_x << std::endl;
-    SDL_Rect AtlasCoords {entity.sprite->atlas_x, entity.sprite->atlas_y, entity.sprite->atlas_height, entity.sprite->atlas_width};
+    // std::cout<< entity.sprite->atlas_x << std::endl;
+    SDL_Rect AtlasCoords {entity->sprite->atlas_x, entity->sprite->atlas_y, entity->sprite->atlas_height, entity->sprite->atlas_width};
     // SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
     SDL_RenderCopy(renderer,entitiesTexture,&AtlasCoords,&block);
  

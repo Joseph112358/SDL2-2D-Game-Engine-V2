@@ -8,7 +8,6 @@ add_executable(hello "main.cpp" "game.cpp" "level.cpp" "player.cpp" "animations/
 target_include_directories(hello PRIVATE "/res")
 
 
-
 target_link_libraries(hello SDL2::SDL2)
 target_link_libraries(hello SDL2_image::SDL2_image)
 add_definitions(-DSDL_MAIN_HANDLED)
