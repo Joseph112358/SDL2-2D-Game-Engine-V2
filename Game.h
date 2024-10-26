@@ -9,6 +9,8 @@
 #include "Entity.h"
 #include "UserInterface.h"
 #include "Sprite.h"
+#include <list>
+
 class Game {
     public:
         Game();
@@ -20,7 +22,9 @@ class Game {
 
         UserInterface * userInterface;
 
-        std::vector<Entity> entities;
+        std::vector<Entity *> entities;
+
+        std::list<int> interactablesList;
 
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 
@@ -32,8 +36,9 @@ class Game {
         void drawMap();
         void drawWalls();
         void drawFloor();
-        void drawEntity(Entity& entity);
-        void drawEntities(std::vector<Entity>& entities);
+        void drawEntity(Entity * entity);
+        void drawEntities(std::vector<Entity*> entities);
+        void createNewEntity(int x_pos, int y_pos);
     
         void renderPlayer(Player * player);
         void checkCollisions(std::pair<int,int> coords);

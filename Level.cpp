@@ -1,4 +1,5 @@
 #include "Level.h"
+#include "game_objects/InteractableObject.h"
 #include <iostream>
 #include <vector>
  // Needs to store
