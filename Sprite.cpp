@@ -1,9 +1,9 @@
 #include "Sprite.h"
 
-Sprite::Sprite(int x, int y){
+Sprite::Sprite(int x, int y, int atlas_height, int atlas_width){
     this->atlas_x =  x;
     this->atlas_y = y;
-    this->atlas_width = 0;
-    this->atlas_height = 0;
+    this->atlas_width = atlas_width;
+    this->atlas_height = atlas_height;
 
 }

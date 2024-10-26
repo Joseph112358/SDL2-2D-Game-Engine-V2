@@ -11,6 +11,7 @@
 #include <queue>
 #include <SDL_image.h>
 #include "animations/AnimationHandler.h"
+#include <list>
 // TODO move all textures over to one atlas
 // A texture loader might not be a bad idea?
 SDL_Surface* atlasSurface = nullptr;
@@ -35,10 +36,17 @@ Game::~Game(){
 
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
-    Sprite * enemy_sprite = new Sprite(0,0);
+    Sprite * enemy_sprite = new Sprite(32,0,32,32);
 
     this->player = new Player();
     this->userInterface = new UserInterface();
+
+
+    // Temporary, have a list of interactables (store coords as key identifier for now
+    // which the user can scroll through)
+
+    this->interactablesList = std::list<int>();
+
     Entity * entity = new Entity(320,320, enemy_sprite);
     this->entities.push_back(*entity);
 
@@ -90,10 +98,14 @@ void Game::handleKeyInput(SDL_Event e){
         }
         if(e.key.keysym.sym == SDLK_e){
             // Get current floor tile and change its state?
-            std::pair<int,int> playerCoords = std::make_pair(player->playerX /64, player->playerY /64);
-            int tile = Game::coordsToArrayInt(playerCoords);
-            this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
+            createNewEntity(this->player->playerX, this->player->playerY);
+            // std::pair<int,int> playerCoords = std::make_pair(player->playerX /64, player->playerY /64);
+            // int tile = Game::coordsToArrayInt(playerCoords);
+            // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
         }
+         if(e.key.keysym.sym == SDLK_y){
+            this->entities.clear();
+         }
     }
  }
 
@@ -194,7 +206,7 @@ void Game::drawMap(){
                 if (inRange(playerCoords,itemCoords)){
                      atlasOffset = 16;
                      this->userInterface->isInteractButtonShown = true;
-                    //  this->userInterface->drawInteractButton(itemsTexture, renderer);
+                    // Add to an interactable queue of some kind?
 
                 } else {
                     atlasOffset = 0;
@@ -231,7 +243,7 @@ void Game::render(){
 
     atlasSurface = IMG_Load("res/Atlas3.png");
     atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
-    itemsSurface = IMG_Load("res/items-sprite-v1.png");
+    itemsSurface = IMG_Load("res/misc.png");
     itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
     floorSurface = IMG_Load("res/desert.png");
     floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
@@ -284,10 +296,19 @@ void Game::drawEntities(std::vector<Entity>& entities){
     }
 }
 
+
+// This needs a destroy entity method because it causing memory leaks
+ void Game::createNewEntity(int x_pos, int y_pos){
+    Sprite * enemy_sprite = new Sprite(32,0,32,32);
+    Entity * entity = new Entity(x_pos, y_pos, enemy_sprite);
+    this->entities.push_back(*entity);
+ }
+
 // This should not be here
 void Game::drawEntity(Entity& entity){
 
-    entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
+    // entitiesSurface = IMG_Load("res/entities-sprite-v1.png");
+     entitiesSurface = IMG_Load("res/misc.png");
     entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
 
     // Work out distance to player
@@ -298,7 +319,12 @@ void Game::drawEntity(Entity& entity){
     int entityScreenY = kMiddleOfScreenY + yOffset;
 
     SDL_Rect block { entityScreenX, entityScreenY,64,64};
-    SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
+    
+    // Get the correct texture from the atlas
+    std::cout<< entity.sprite->atlas_x << std::endl;
+    SDL_Rect AtlasCoords {entity.sprite->atlas_x, entity.sprite->atlas_y, entity.sprite->atlas_height, entity.sprite->atlas_width};
+    // SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
+    SDL_RenderCopy(renderer,entitiesTexture,&AtlasCoords,&block);
  
 }
 
