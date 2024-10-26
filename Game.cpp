@@ -101,19 +101,19 @@ void Game::handleKeyboardInput(SDL_Event e){
     player->playerIdle = true;
     int playerMovementSpeed = 16;
     keyState = SDL_GetKeyboardState(NULL);
-    if(keyState[SDL_SCANCODE_RIGHT]){
+    if(keyState[SDL_SCANCODE_D]){
         player->playerIdle = false;
         player->handlePlayerMovement(90, this->level);
     }
-    else if(keyState[SDL_SCANCODE_LEFT]){
+    else if(keyState[SDL_SCANCODE_A]){
         player->handlePlayerMovement(270, this->level);
         player->playerIdle = false;
     }
-    if(keyState[SDL_SCANCODE_UP]){
+    if(keyState[SDL_SCANCODE_W]){
         player->handlePlayerMovement(0, this->level);
         player->playerIdle = false;
     }
-    else if(keyState[SDL_SCANCODE_DOWN]){
+    else if(keyState[SDL_SCANCODE_S]){
         player->handlePlayerMovement(180, this->level);
         player->playerIdle = false;
     }
