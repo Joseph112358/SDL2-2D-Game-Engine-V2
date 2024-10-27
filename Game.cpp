@@ -15,18 +15,20 @@
 // TODO move all textures over to one atlas
 // A texture loader might not be a bad idea?
 SDL_Surface* atlasSurface = nullptr;
-SDL_Surface* itemsSurface = nullptr;
-SDL_Surface* entitiesSurface = nullptr;
+SDL_Surface* miscSurface = nullptr;
 SDL_Surface* floorSurface = nullptr;
 SDL_Texture* atlasTexture = nullptr;
-SDL_Texture* itemsTexture = nullptr;
-SDL_Texture* entitiesTexture = nullptr;
+SDL_Texture* miscTexture = nullptr;
 SDL_Texture* floorTexture = nullptr;
 AnimationHandler * animationHandler = new AnimationHandler();
 
-// Entity * entity = nullptr;
+
 
 bool clearEntities;
+
+// TODO: Encapsulate this logic elsewhere (design a system)
+Sprite * enemy_sprite = new Sprite(32,0,32,32);
+Sprite * fireball_sprite = new Sprite(0,16,32,16);
 
 const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
@@ -41,8 +43,6 @@ Game::~Game(){
 
 void Game::init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen){
 
-    Sprite * enemy_sprite = new Sprite(32,0,32,32);
-
     this->player = new Player();
     this->userInterface = new UserInterface();
 
@@ -52,7 +52,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->interactablesList = std::list<int>();
 
-    // Entity * entity = new Entity(320,320, enemy_sprite);
     Entity * entity_first = new Entity(320,320, enemy_sprite);
     this->entities.push_back(entity_first);
 
@@ -206,7 +205,7 @@ void Game::drawMap(){
 
                 
                 SDL_Rect atlasCoords {atlasOffset,0,16,16};
-                SDL_RenderCopy(renderer,itemsTexture,&atlasCoords,&currentTileDimensions);
+                SDL_RenderCopy(renderer,miscTexture,&atlasCoords,&currentTileDimensions);
               }
 
             // Draw Walls
@@ -224,7 +223,7 @@ void Game::drawMap(){
     }
     
     if(this->userInterface->isInteractButtonShown){
-          this->userInterface->drawInteractButton(itemsTexture, renderer);
+          this->userInterface->drawInteractButton(miscTexture, renderer);
     }
 }
 
@@ -234,13 +233,10 @@ void Game::render(){
 
     atlasSurface = IMG_Load("res/Atlas3.png");
     atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
-    itemsSurface = IMG_Load("res/misc.png");
-    itemsTexture = SDL_CreateTextureFromSurface(renderer, itemsSurface);
     floorSurface = IMG_Load("res/desert.png");
     floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
-    entitiesSurface = IMG_Load("res/misc.png");
-    entitiesTexture = SDL_CreateTextureFromSurface(renderer, entitiesSurface);
-
+    miscSurface = IMG_Load("res/misc.png");
+    miscTexture = SDL_CreateTextureFromSurface(renderer, miscSurface);
 
     drawMap();
     //   Draw floor
@@ -251,13 +247,12 @@ void Game::render(){
     SDL_Log("Array size: %d" , entities.size());
 
     SDL_DestroyTexture(atlasTexture);
-    SDL_DestroyTexture(itemsTexture);
-    SDL_DestroyTexture(entitiesTexture);
     SDL_DestroyTexture(floorTexture);
+    SDL_DestroyTexture(miscTexture);
     SDL_FreeSurface(atlasSurface);
-    SDL_FreeSurface(itemsSurface);
-    SDL_FreeSurface(entitiesSurface);
     SDL_FreeSurface(floorSurface);
+    SDL_FreeSurface(miscSurface);
+
 
     
     renderPlayer(this->player);
@@ -293,8 +288,8 @@ void Game::drawEntities(std::vector<Entity*> entities){
 
 // CAUTION: causes major memory leak
  void Game::createNewEntity(int x_pos, int y_pos){
-    Sprite * enemy_sprite = new Sprite(32,0,32,32);
-    Entity * entity = new Entity(x_pos, y_pos, enemy_sprite);
+    // Sprite * enemy_sprite = new Sprite(32,0,32,32);
+    Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
     this->entities.push_back(entity);
  }
 
@@ -308,13 +303,13 @@ void Game::drawEntity(Entity * entity){
     int entityScreenX = kMiddleOfScreenX + xOffset;
     int entityScreenY = kMiddleOfScreenY + yOffset;
 
+    // The entity width and height need to be set need to be set 
     SDL_Rect block { entityScreenX, entityScreenY,64,64};
     
     // Get the correct texture from the atlas
     // std::cout<< entity.sprite->atlas_x << std::endl;
     SDL_Rect AtlasCoords {entity->sprite->atlas_x, entity->sprite->atlas_y, entity->sprite->atlas_height, entity->sprite->atlas_width};
-    // SDL_RenderCopy(renderer,entitiesTexture,NULL,&block);
-    SDL_RenderCopy(renderer,entitiesTexture,&AtlasCoords,&block);
+    SDL_RenderCopy(renderer,miscTexture,&AtlasCoords,&block);
  
 }
 
