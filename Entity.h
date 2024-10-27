@@ -10,7 +10,7 @@ class Entity {
     public:
         Entity(int x, int y, Sprite * sprite);
         ~Entity() {
-            delete sprite;
+            // delete sprite;
         }
 
         int entityX;
