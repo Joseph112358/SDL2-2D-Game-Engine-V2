@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.10)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 
-add_executable(hello "main.cpp" "game.cpp" "level.cpp" "player.cpp" "animations/AnimationHandler.cpp" "Entity.cpp" 
+add_executable(hello "main.cpp" "game.cpp" "level.cpp" "player.cpp" "animations/AnimationHandler.cpp" 
+"entities/Entity.cpp" "entities/EntityFactory.cpp"
 "animations/Animations.cpp" "UserInterface.cpp" "Sprite.cpp")
 target_include_directories(hello PRIVATE "/res")
 

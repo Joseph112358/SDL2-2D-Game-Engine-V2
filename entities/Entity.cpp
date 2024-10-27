@@ -1,5 +1,5 @@
 #include "Entity.h"
-#include "Sprite.h"
+#include "../Sprite.h"
 #include <cmath>
 
 int entityMoveSpeed = 4;
