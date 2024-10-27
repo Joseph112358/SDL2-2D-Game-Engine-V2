@@ -5,7 +5,7 @@
 #include <vector>
 #include "Level.h"
 #include "Player.h"
-#include "Entity.h"
+#include "entities/Entity.h"
 #include "UserInterface.h"
 #include <cmath>
 #include <queue>
@@ -45,6 +45,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
+    this->entityFactory = new EntityFactory();
+    // entityFactory->createEntity("enemy", 0 , 0);
 
 
     // Temporary, have a list of interactables (store coords as key identifier for now
@@ -91,7 +93,8 @@ void Game::handleKeyInput(SDL_Event e){
         }
         if(e.key.keysym.sym == SDLK_e){
             // Get current floor tile and change its state?
-            createNewEntity(this->player->playerX, this->player->playerY);
+            Entity * entity = entityFactory->createEntity("enemy", this->player->playerX , this->player->playerY);
+            this->entities.push_back(entity);
             // std::pair<int,int> playerCoords = std::make_pair(player->playerX /64, player->playerY /64);
             // int tile = Game::coordsToArrayInt(playerCoords);
             // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
@@ -244,7 +247,7 @@ void Game::render(){
     //   Draw walls
 
     drawEntities(this->entities);
-    SDL_Log("Array size: %d" , entities.size());
+    // SDL_Log("Array size: %d" , entities.size());
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(floorTexture);
@@ -286,7 +289,7 @@ void Game::drawEntities(std::vector<Entity*> entities){
 }
 
 
-// CAUTION: causes major memory leak
+// CAN BE DEPRECATED NOW
  void Game::createNewEntity(int x_pos, int y_pos){
     // Sprite * enemy_sprite = new Sprite(32,0,32,32);
     Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);

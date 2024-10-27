@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <SDL_image.h>
-#include "Sprite.h"
+#include "../Sprite.h"
 #include <queue>
 
 
@@ -10,7 +10,7 @@ class Entity {
     public:
         Entity(int x, int y, Sprite * sprite);
         ~Entity() {
-            // delete sprite;
+            delete sprite;
         }
 
         int entityX;

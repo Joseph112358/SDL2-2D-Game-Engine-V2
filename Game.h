@@ -6,7 +6,8 @@
 #include<vector>
 #include "Level.h"
 #include "Player.h"
-#include "Entity.h"
+#include "entities/Entity.h"
+#include "entities/EntityFactory.h"
 #include "UserInterface.h"
 #include "Sprite.h"
 #include <list>
@@ -21,6 +22,8 @@ class Game {
         Player * player;
 
         UserInterface * userInterface;
+
+        EntityFactory * entityFactory;
 
         std::vector<Entity *> entities;
 
