@@ -27,8 +27,8 @@ AnimationHandler * animationHandler = new AnimationHandler();
 bool clearEntities;
 
 // TODO: Encapsulate this logic elsewhere (design a system)
-Sprite * enemy_sprite = new Sprite(32,0,32,32);
-Sprite * fireball_sprite = new Sprite(0,16,32,16);
+Sprite * enemy_sprite = new Sprite(32,0,32,32,64,64);
+Sprite * fireball_sprite = new Sprite(0,16,32,16,64,128);
 
 const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
@@ -54,7 +54,8 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->interactablesList = std::list<int>();
 
-    Entity * entity_first = new Entity(320,320, enemy_sprite);
+    // Entity * entity_first = new Entity(320,320, enemy_sprite);
+    Entity * entity_first = entityFactory->createEntity("fireball", 0 , 0);
     this->entities.push_back(entity_first);
 
     int flags = 0; 
@@ -98,6 +99,10 @@ void Game::handleKeyInput(SDL_Event e){
             // std::pair<int,int> playerCoords = std::make_pair(player->playerX /64, player->playerY /64);
             // int tile = Game::coordsToArrayInt(playerCoords);
             // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
+        }
+        if(e.key.keysym.sym == SDLK_f){
+             Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY);
+            this->entities.push_back(entity);
         }
          if(e.key.keysym.sym == SDLK_y){
             clearEntities = true;
@@ -307,7 +312,10 @@ void Game::drawEntity(Entity * entity){
     int entityScreenY = kMiddleOfScreenY + yOffset;
 
     // The entity width and height need to be set need to be set 
-    SDL_Rect block { entityScreenX, entityScreenY,64,64};
+    int entity_width = entity->sprite->width; // These are wrong
+    int entity_height = entity->sprite->height;
+    SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
+    // SDL_Rect block { entityScreenX, entityScreenY,64,64};
     
     // Get the correct texture from the atlas
     // std::cout<< entity.sprite->atlas_x << std::endl;
