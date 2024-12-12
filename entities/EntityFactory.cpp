@@ -1,19 +1,22 @@
 #include "Entity.h"
 #include "EntityFactory.h"
+#include "SpriteFactory.h"
 #include <string>
 
-EntityFactory::EntityFactory(){};
+EntityFactory::EntityFactory(){
+    this->spriteFactory = new SpriteFactory();
+};
 
 Entity * EntityFactory::createEntity(std::string param, int x_pos, int y_pos){
     if(param == "enemy"){
-        Sprite * enemy_sprite = new Sprite(32,0,32,32,64,64);
+        Sprite * enemy_sprite = spriteFactory->getSprite("enemy");
         Entity * entity = new Entity(x_pos, y_pos, enemy_sprite);
         SDL_Log("enemy");
         return entity;
 
     }
     else if(param == "fireball"){
-        Sprite * fireball_sprite = new Sprite(0,16,32,16,64,128);
+        Sprite * fireball_sprite = spriteFactory->getSprite("fireball");
         Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
         SDL_Log("fireball");
         return entity;
