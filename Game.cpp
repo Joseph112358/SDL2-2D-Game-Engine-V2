@@ -26,10 +26,6 @@ AnimationHandler * animationHandler = new AnimationHandler();
 
 bool clearEntities;
 
-// TODO: Encapsulate this logic elsewhere (design a system)
-Sprite * enemy_sprite = new Sprite(32,0,32,32,64,64);
-Sprite * fireball_sprite = new Sprite(0,16,32,16,64,128);
-
 const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
 const int TILE_UNIT_SIZE = 64;
@@ -46,8 +42,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     this->player = new Player();
     this->userInterface = new UserInterface();
     this->entityFactory = new EntityFactory();
-    // entityFactory->createEntity("enemy", 0 , 0);
-
 
     // Temporary, have a list of interactables (store coords as key identifier for now
     // which the user can scroll through)
@@ -295,11 +289,10 @@ void Game::drawEntities(std::vector<Entity*> entities){
 
 
 // CAN BE DEPRECATED NOW
- void Game::createNewEntity(int x_pos, int y_pos){
-    // Sprite * enemy_sprite = new Sprite(32,0,32,32);
-    Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
-    this->entities.push_back(entity);
- }
+//  void Game::createNewEntity(int x_pos, int y_pos){
+//     Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
+//     this->entities.push_back(entity);
+//  }
 
 // This should not be here
 void Game::drawEntity(Entity * entity){
