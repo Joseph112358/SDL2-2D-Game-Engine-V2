@@ -3,7 +3,8 @@
 #include <cmath>
 
 int entityMoveSpeed = 4;
-Entity::Entity(int x, int y, Sprite * sprite){
+Entity::Entity(int x, int y, std::string id, Sprite * sprite){
+    this->id = id;
     this->entityX =  x;
     this->entityY =  y;
     this->direction = 1;
@@ -13,8 +14,15 @@ Entity::Entity(int x, int y, Sprite * sprite){
 
 // Maybe add a list of points to visit / process?
 
+// Have components instead e.g. for entity, apply compenent effect (movement etc) if valid (e.g. in motion)
+
+// Check for collisions
+//   if yes, explode -> whatever this should be
+//   if no move forward
 void Entity::update(){
-    // this->entityX = this->entityX += 2;
+    if(this->id == "fireball"){
+        this->entityX = this->entityX += 4;
+    }
 }
 
 // Is map even needed?
