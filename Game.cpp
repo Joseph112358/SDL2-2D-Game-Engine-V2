@@ -142,6 +142,12 @@ void Game::update(){
     clearEntities = false;
     }
 
+    for (auto* entity : entities) {
+    if (entity) {
+        entity->update();
+    }
+}
+
     
 }
 
