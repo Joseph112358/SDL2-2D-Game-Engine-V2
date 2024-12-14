@@ -95,7 +95,7 @@ void Game::handleKeyInput(SDL_Event e){
             // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
         }
         if(e.key.keysym.sym == SDLK_f){
-             Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY);
+             Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY,this->player->direction);
             this->entities.push_back(entity);
         }
          if(e.key.keysym.sym == SDLK_y){
@@ -110,18 +110,22 @@ void Game::handleKeyboardInput(SDL_Event e){
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_D]){
         player->playerIdle = false;
+        player->direction = 90;
         player->handlePlayerMovement(90, this->level);
     }
     else if(keyState[SDL_SCANCODE_A]){
         player->handlePlayerMovement(270, this->level);
+        player->direction = 270;
         player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_W]){
         player->handlePlayerMovement(0, this->level);
+         player->direction = 0;
         player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_S]){
         player->handlePlayerMovement(180, this->level);
+         player->direction = 180;
         player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_LSHIFT]){
@@ -252,7 +256,6 @@ void Game::render(){
     //   Draw walls
 
     drawEntities(this->entities);
-    // SDL_Log("Array size: %d" , entities.size());
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(floorTexture);

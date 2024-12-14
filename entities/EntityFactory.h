@@ -8,6 +8,7 @@ class EntityFactory {
     public:
         EntityFactory();
         Entity * createEntity(std::string param, int x_pos, int y_pos);
+        Entity * createEntity(std::string param, int x_pos, int y_pos, int direction);
         SpriteFactory * spriteFactory;
         
 };

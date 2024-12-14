@@ -10,6 +10,8 @@
 class Entity {
     public:
         Entity(int x, int y, std::string id, Sprite * sprite);
+
+        Entity(int x, int y,int direction, std::string id, Sprite * sprite);
         ~Entity() {
         }
         std::string id;
