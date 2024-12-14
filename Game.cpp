@@ -144,7 +144,7 @@ void Game::update(){
 
     for (auto* entity : entities) {
     if (entity) {
-        entity->update();
+        entity->update(this->level->wallMap);
     }
 }
 
@@ -294,11 +294,6 @@ void Game::drawEntities(std::vector<Entity*> entities){
 }
 
 
-// CAN BE DEPRECATED NOW
-//  void Game::createNewEntity(int x_pos, int y_pos){
-//     Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
-//     this->entities.push_back(entity);
-//  }
 
 // This should not be here
 void Game::drawEntity(Entity * entity){
@@ -384,3 +379,4 @@ bool Game::inRange(std::pair<int,int> playerPoint , std::pair<int,int> itemPoint
     double distance =sqrt(pow( playerPoint.first - itemPoint.first, 2) + pow(playerPoint.second - itemPoint.second, 2));
     return (distance < 91);
 }
+

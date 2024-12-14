@@ -19,10 +19,36 @@ Entity::Entity(int x, int y, std::string id, Sprite * sprite){
 // Check for collisions
 //   if yes, explode -> whatever this should be
 //   if no move forward
-void Entity::update(){
+void Entity::update(const std::vector<int>& map){
     if(this->id == "fireball"){
-        this->entityX = this->entityX += 4;
+        bool colliding = isCollidingWithMap(map);
+        // Check for collisions
+        // Pass coords and height + width
+        if(!colliding){
+            this->entityX = this->entityX += 4;
+        }
+        // this->entityX = this->entityX += 4;
     }
+}
+
+bool Entity::isCollidingWithMap(const std::vector<int>& map){
+
+    // Calculate place on map
+    // PASS IN LEVEL INSTEAD FOR MAPX (or width) use 17 for now
+
+    // int xRounded = entityX / 64;
+    //  q = (x + y - 1) / y;
+    int xRounded = (entityX  + 63) / 64;
+    int yRounded = entityY / 64;
+
+    int levelMapIndex = (yRounded * 17) + xRounded;
+    // SDL_Log("thing: %d" , levelMapIndex);
+
+    if(map[levelMapIndex] == 0){
+        SDL_Log("Thing: %d", xRounded);
+        return false;
+    }
+    return true;
 }
 
 // Is map even needed?

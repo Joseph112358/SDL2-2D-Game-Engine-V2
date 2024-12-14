@@ -13,7 +13,7 @@ Sprite* SpriteFactory::getSprite(std::string key){
     }
 
     if(key == "fireball"){
-        Sprite * fireball_sprite = new Sprite(0,16,32,16,64,128);
+        Sprite * fireball_sprite = new Sprite(0,16,32,16,32,64);
         spriteMap["fireball"] = fireball_sprite;
         return fireball_sprite; 
     }

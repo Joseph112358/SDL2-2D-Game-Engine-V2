@@ -23,7 +23,11 @@ class Entity {
 
         // To be optimised
         bool moving;
-        void update();
+
+
+        void update(const std::vector<int>& map);
+        // New function for fireball, will be generic eventually
+        bool isCollidingWithMap(const std::vector<int>& map);
         std::pair<int, int> currentDestination;
         std::queue<std::pair<int,int>> moveQueue;
         void moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map);
