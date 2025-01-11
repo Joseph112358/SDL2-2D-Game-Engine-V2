@@ -67,6 +67,8 @@ if (this->id == "fireball") {
 }
 }
 
+// Lord have mercy for the code I have written blow
+// Redesign or refactor -> we need to check all 4, or at least 2 corners
 bool Entity::isCollidingWithMap(Level * level){
     const std::vector<int>& map = level->wallMap;
     int mapX = level->mapX;
@@ -89,7 +91,33 @@ bool Entity::isCollidingWithMap(Level * level){
     int levelMapIndex = (yRounded * mapX) + xRounded;
 
     // Check if the map cell is empty (0 indicates no collision)
-    return map[levelMapIndex] != 0;
+    if(map[levelMapIndex] != 0) {return true;}
+    
+    // CHECKING THE OTHER CORNER
+
+    xRounded = entityX / 64;
+    yRounded = entityY / 64;
+    
+    if (this->direction == 90) {
+        xRounded = (entityX + 63 + speed) / 64; // Moving right
+        yRounded = (entityY + 31) /64;
+    } else if (this->direction == 270) {
+        xRounded = (entityX - speed) / 64;        // Moving left
+        yRounded = (entityY + 31) /64;
+    }
+
+    if (this->direction == 180) {
+        yRounded = (entityY + 63 + speed) / 64; // Moving down
+        xRounded = (entityX +31) /64;
+    } else if (this->direction == 0) {
+        yRounded = (entityY - speed) / 64;        // Moving up
+        xRounded = (entityX +31) /64;
+    }
+
+    levelMapIndex = (yRounded * mapX) + xRounded;
+    if(map[levelMapIndex] != 0) {return true;}
+
+    return false;
 }
 
 void Entity::getSpriteTransform(SDL_RendererFlip& flip, double& rotation){
