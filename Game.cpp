@@ -95,7 +95,7 @@ void Game::handleKeyInput(SDL_Event e){
             // this->level->floorMap[tile] = 1- this->level->floorMap[tile] ;
         }
         if(e.key.keysym.sym == SDLK_f){
-             Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY);
+             Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY,this->player->direction);
             this->entities.push_back(entity);
         }
          if(e.key.keysym.sym == SDLK_y){
@@ -107,21 +107,26 @@ void Game::handleKeyInput(SDL_Event e){
 void Game::handleKeyboardInput(SDL_Event e){
     player->playerIdle = true;
     int playerMovementSpeed = 16;
+    player->direction = 90;
     keyState = SDL_GetKeyboardState(NULL);
     if(keyState[SDL_SCANCODE_D]){
         player->playerIdle = false;
+        player->direction = 90;
         player->handlePlayerMovement(90, this->level);
     }
     else if(keyState[SDL_SCANCODE_A]){
         player->handlePlayerMovement(270, this->level);
+        player->direction = 270;
         player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_W]){
         player->handlePlayerMovement(0, this->level);
+         player->direction = 0;
         player->playerIdle = false;
     }
     else if(keyState[SDL_SCANCODE_S]){
         player->handlePlayerMovement(180, this->level);
+         player->direction = 180;
         player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_LSHIFT]){
@@ -144,7 +149,7 @@ void Game::update(){
 
     for (auto* entity : entities) {
     if (entity) {
-        entity->update();
+        entity->update(this->level->wallMap);
     }
 }
 
@@ -252,7 +257,6 @@ void Game::render(){
     //   Draw walls
 
     drawEntities(this->entities);
-    // SDL_Log("Array size: %d" , entities.size());
 
     SDL_DestroyTexture(atlasTexture);
     SDL_DestroyTexture(floorTexture);
@@ -294,11 +298,6 @@ void Game::drawEntities(std::vector<Entity*> entities){
 }
 
 
-// CAN BE DEPRECATED NOW
-//  void Game::createNewEntity(int x_pos, int y_pos){
-//     Entity * entity = new Entity(x_pos, y_pos, fireball_sprite);
-//     this->entities.push_back(entity);
-//  }
 
 // This should not be here
 void Game::drawEntity(Entity * entity){
@@ -384,3 +383,4 @@ bool Game::inRange(std::pair<int,int> playerPoint , std::pair<int,int> itemPoint
     double distance =sqrt(pow( playerPoint.first - itemPoint.first, 2) + pow(playerPoint.second - itemPoint.second, 2));
     return (distance < 91);
 }
+

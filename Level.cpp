@@ -52,7 +52,7 @@ Level::Level(int levelCode){
          };
    }
    else {
-       this->mapX = 6;
+      this->mapX = 6;
       this->mapY = 6;
       this->wallMap = * new std::vector<int> 
          {1,1,1,1,1,1,
