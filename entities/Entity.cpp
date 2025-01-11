@@ -18,6 +18,7 @@ Entity::Entity(int x, int y, int direction, std::string id, Sprite * sprite){
     this->entityX =  x;
     this->entityY =  y;
     this->direction = direction;
+    this->speed = 8;
     this->moving = false;
     this->sprite = sprite;
 }
@@ -40,10 +41,10 @@ if (this->id == "fireball") {
 
     // Determine velocity based on direction
     switch (this->direction) {
-        case 90:  x_velocity = 4;  break;
-        case 270: x_velocity = -4; break;
-        case 180: y_velocity = 4;  break;
-        default:  y_velocity = -4; break;
+        case 90:  x_velocity = speed;  break;
+        case 270: x_velocity = -1 * speed; break;
+        case 180: y_velocity = speed;  break;
+        default:  y_velocity = -1 * speed; break;
     }
 
     // Check for collisions with the map
@@ -62,15 +63,15 @@ bool Entity::isCollidingWithMap(const std::vector<int>& map){
     int yRounded = entityY / 64;
     
     if (this->direction == 90) {
-        xRounded = (entityX + 63) / 64; // Moving right
+        xRounded = (entityX + 63 + speed) / 64; // Moving right
     } else if (this->direction == 270) {
-        xRounded = entityX / 64;        // Moving left
+        xRounded = (entityX - speed) / 64;        // Moving left
     }
 
     if (this->direction == 180) {
-        yRounded = (entityY + 63) / 64; // Moving down
+        yRounded = (entityY + 63 + speed) / 64; // Moving down
     } else if (this->direction == 0) {
-        yRounded = entityY / 64;        // Moving up
+        yRounded = (entityY - speed) / 64;        // Moving up
     }
 
     int levelMapIndex = (yRounded * 17) + xRounded;

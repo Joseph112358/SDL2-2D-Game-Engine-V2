@@ -20,6 +20,7 @@ class Entity {
         int height;
         int width;
         int direction;
+        int speed;
         Sprite * sprite;
 
 
