@@ -4,6 +4,7 @@
 #include <SDL_image.h>
 #include "SpriteFactory.h"
 #include "../Sprite.h"
+#include "../Level.h"
 #include <queue>
 
 
@@ -20,6 +21,7 @@ class Entity {
         int height;
         int width;
         int direction;
+        int speed;
         Sprite * sprite;
 
 
@@ -27,12 +29,12 @@ class Entity {
         bool moving;
 
 
-        void update(const std::vector<int>& map);
+        void update(Level * level);
 
         void getSpriteTransform(SDL_RendererFlip& flip, double& rotation);
 
         // New function for fireball, will be generic eventually
-        bool isCollidingWithMap(const std::vector<int>& map);
+        bool isCollidingWithMap(Level * level);
         std::pair<int, int> currentDestination;
         std::queue<std::pair<int,int>> moveQueue;
         void moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map);

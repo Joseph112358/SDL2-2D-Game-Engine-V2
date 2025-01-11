@@ -149,7 +149,7 @@ void Game::update(){
 
     for (auto* entity : entities) {
     if (entity) {
-        entity->update(this->level->wallMap);
+        entity->update(this->level);
     }
 }
 
@@ -293,6 +293,8 @@ void Game::renderPlayer(Player * player){
 void Game::drawEntities(std::vector<Entity*> entities){
     for (Entity* entity : entities) {
         drawEntity(entity);
+        // drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
+            drawCollisionBox(entity->entityX,entity->entityY,entity->sprite->width,entity->sprite->height);
     }
 
 }
@@ -343,6 +345,19 @@ void Game::checkCollisions(std::pair<int,int> coords){
 }
 
 // Used for debugging mainly
+void Game::drawCollisionBox(int boxX, int boxY, int width, int height){
+    int xOffset = boxX - player->playerX; 
+    int yOffset = boxY - player->playerY;
+
+    int entityScreenX = kMiddleOfScreenX + xOffset;
+    int entityScreenY = kMiddleOfScreenY + yOffset;
+
+    SDL_Rect block { entityScreenX, entityScreenY,width,height};
+
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 128); // RGBA: Red color
+    SDL_RenderDrawRect(renderer, &block);
+}
+// [[deprecated]]
 void Game::drawCollisionbox(int boxX, int boxY){
 
     int relativeBoxTopLeftX = (boxX  * TILE_UNIT_SIZE) - player->playerX;

@@ -47,6 +47,7 @@ class Game {
         void checkCollisions(std::pair<int,int> coords);
 
         void drawCollisionbox(int boxX, int boxY);
+        void drawCollisionBox(int boxX, int boxY, int width, int height);
         void drawTileBox(int tileIndex);
         void clean();
 
