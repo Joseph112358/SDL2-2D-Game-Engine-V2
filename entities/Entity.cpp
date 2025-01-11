@@ -1,6 +1,7 @@
 #include "Entity.h"
 #include "../Sprite.h"
 #include <SDL.h>
+#include "../Level.h"
 #include <cmath>
 
 int entityMoveSpeed = 4;
@@ -32,7 +33,7 @@ Entity::Entity(int x, int y, int direction, std::string id, Sprite * sprite){
 //   if no move forward
 
 
-void Entity::update(const std::vector<int>& map){
+void Entity::update(Level * level){
 
 if (this->id == "fireball") {
        // Initialize velocity components
@@ -48,7 +49,7 @@ if (this->id == "fireball") {
     }
 
     // Check for collisions with the map
-    if (!isCollidingWithMap(map)) {
+    if (!isCollidingWithMap(level)) {
         // Update entity coordinates if no collision
         this->entityX += x_velocity;
         this->entityY += y_velocity;
@@ -57,7 +58,9 @@ if (this->id == "fireball") {
 }
 
 // PASS IN LEVEL INSTEAD FOR MAPX (or width) use 17 for now
-bool Entity::isCollidingWithMap(const std::vector<int>& map){
+bool Entity::isCollidingWithMap(Level * level){
+    const std::vector<int>& map = level->wallMap;
+    int mapX = level->mapX;
 
     int xRounded = entityX / 64;
     int yRounded = entityY / 64;

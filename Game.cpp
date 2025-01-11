@@ -149,7 +149,7 @@ void Game::update(){
 
     for (auto* entity : entities) {
     if (entity) {
-        entity->update(this->level->wallMap);
+        entity->update(this->level);
     }
 }
 
