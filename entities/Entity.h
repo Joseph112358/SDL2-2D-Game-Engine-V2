@@ -28,6 +28,9 @@ class Entity {
 
 
         void update(const std::vector<int>& map);
+
+        void getSpriteTransform(SDL_RendererFlip& flip, double& rotation);
+
         // New function for fireball, will be generic eventually
         bool isCollidingWithMap(const std::vector<int>& map);
         std::pair<int, int> currentDestination;

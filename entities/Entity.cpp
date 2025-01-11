@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include "../Sprite.h"
+#include <SDL.h>
 #include <cmath>
 
 int entityMoveSpeed = 4;
@@ -77,6 +78,28 @@ bool Entity::isCollidingWithMap(const std::vector<int>& map){
     // Check if the map cell is empty (0 indicates no collision)
     return map[levelMapIndex] != 0;
 }
+
+void Entity::getSpriteTransform(SDL_RendererFlip& flip, double& rotation){
+        switch (this->direction) {
+            case 90:
+                flip = SDL_FLIP_NONE;
+                rotation = 0;
+                break;
+            case 270:
+                flip = SDL_FLIP_HORIZONTAL;
+                rotation = 0;
+                break;
+            case 180:
+                flip = SDL_FLIP_NONE;
+                rotation = 90;
+                break;
+            case 0:
+            default:
+                flip = SDL_FLIP_NONE;
+                rotation = 270;
+                break;
+        }
+    }
 
 // Is map even needed?
 void Entity::moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map){

@@ -314,11 +314,19 @@ void Game::drawEntity(Entity * entity){
     int entity_height = entity->sprite->height;
     SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
     // SDL_Rect block { entityScreenX, entityScreenY,64,64};
+
+
+    // flip code
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    double rotation = 0;
+    entity->getSpriteTransform(flip, rotation);
+
     
     // Get the correct texture from the atlas
-    // std::cout<< entity.sprite->atlas_x << std::endl;
     SDL_Rect AtlasCoords {entity->sprite->atlas_x, entity->sprite->atlas_y, entity->sprite->atlas_height, entity->sprite->atlas_width};
-    SDL_RenderCopy(renderer,miscTexture,&AtlasCoords,&block);
+    // SDL_RenderCopy(renderer,miscTexture,&AtlasCoords,&block);
+    SDL_RenderCopyEx(renderer, miscTexture, &AtlasCoords, &block, rotation, nullptr, flip);
+
  
 }
 
