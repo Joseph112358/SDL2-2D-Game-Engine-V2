@@ -19,6 +19,16 @@ Entity::Entity(int x, int y, int direction, std::string id, Sprite * sprite){
     this->entityX =  x;
     this->entityY =  y;
     this->direction = direction;
+    
+    // Hacky way of sorting out rotated collision box
+    if(direction == 0 || direction == 180){
+        this->width = sprite->height;
+        this->height = sprite->width;
+    } else {
+        this->width = sprite->width;
+        this->height = sprite->height;
+    }
+
     this->speed = 8;
     this->moving = false;
     this->sprite = sprite;
@@ -57,7 +67,6 @@ if (this->id == "fireball") {
 }
 }
 
-// PASS IN LEVEL INSTEAD FOR MAPX (or width) use 17 for now
 bool Entity::isCollidingWithMap(Level * level){
     const std::vector<int>& map = level->wallMap;
     int mapX = level->mapX;
@@ -77,7 +86,7 @@ bool Entity::isCollidingWithMap(Level * level){
         yRounded = (entityY - speed) / 64;        // Moving up
     }
 
-    int levelMapIndex = (yRounded * 17) + xRounded;
+    int levelMapIndex = (yRounded * mapX) + xRounded;
 
     // Check if the map cell is empty (0 indicates no collision)
     return map[levelMapIndex] != 0;
