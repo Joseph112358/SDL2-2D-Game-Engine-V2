@@ -315,9 +315,16 @@ void Game::drawEntity(Entity * entity){
     // int entity_height = entity->sprite->height;
     int entity_width = entity->width;
     int entity_height = entity->height;
-    SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
-    // SDL_Rect block { entityScreenX, entityScreenY,64,64};
 
+    SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
+    if(entity->direction == 0 || entity->direction == 180){
+        block.h = entity_width;
+        block.w = entity_height;
+
+        // Temp code fix
+        block.x = entityScreenX - 16;
+        block.y = entityScreenY + 16;
+    }
 
     // flip code
     SDL_RendererFlip flip = SDL_FLIP_NONE;
