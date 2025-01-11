@@ -293,8 +293,7 @@ void Game::renderPlayer(Player * player){
 void Game::drawEntities(std::vector<Entity*> entities){
     for (Entity* entity : entities) {
         drawEntity(entity);
-        // drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
-            drawCollisionBox(entity->entityX,entity->entityY,entity->sprite->width,entity->sprite->height);
+        drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
     }
 
 }
@@ -312,8 +311,10 @@ void Game::drawEntity(Entity * entity){
     int entityScreenY = kMiddleOfScreenY + yOffset;
 
     // The entity width and height need to be set need to be set 
-    int entity_width = entity->sprite->width; // These are wrong
-    int entity_height = entity->sprite->height;
+    // int entity_width = entity->sprite->width; // These are wrong
+    // int entity_height = entity->sprite->height;
+    int entity_width = entity->width;
+    int entity_height = entity->height;
     SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
     // SDL_Rect block { entityScreenX, entityScreenY,64,64};
 
@@ -325,6 +326,7 @@ void Game::drawEntity(Entity * entity){
 
     
     // Get the correct texture from the atlas
+    //SDL_Rect AtlasCoords {entity->sprite->atlas_x, entity->sprite->atlas_y, entity->sprite->atlas_height, entity->sprite->atlas_width};
     SDL_Rect AtlasCoords {entity->sprite->atlas_x, entity->sprite->atlas_y, entity->sprite->atlas_height, entity->sprite->atlas_width};
     // SDL_RenderCopy(renderer,miscTexture,&AtlasCoords,&block);
     SDL_RenderCopyEx(renderer, miscTexture, &AtlasCoords, &block, rotation, nullptr, flip);
