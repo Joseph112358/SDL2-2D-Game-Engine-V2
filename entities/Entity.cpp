@@ -31,47 +31,51 @@ Entity::Entity(int x, int y, int direction, std::string id, Sprite * sprite){
 
 
 void Entity::update(const std::vector<int>& map){
-    if(this->id == "fireball"){
-        int x_velocity = 4;
-        if(this->direction == 270){
-             SDL_Log("Here");
-            x_velocity = -4;
-        }
-        bool colliding = isCollidingWithMap(map);
-        // Check for collisions
-        // Pass coords and height + width
-        if(!colliding){
-            this->entityX = this->entityX += x_velocity;
-        }
-        // this->entityX = this->entityX += 4;
+
+if (this->id == "fireball") {
+       // Initialize velocity components
+    int x_velocity = 0;
+    int y_velocity = 0;
+
+    // Determine velocity based on direction
+    switch (this->direction) {
+        case 90:  x_velocity = 4;  break;
+        case 270: x_velocity = -4; break;
+        case 180: y_velocity = 4;  break;
+        default:  y_velocity = -4; break;
+    }
+
+    // Check for collisions with the map
+    if (!isCollidingWithMap(map)) {
+        // Update entity coordinates if no collision
+        this->entityX += x_velocity;
+        this->entityY += y_velocity;
     }
 }
+}
 
+// PASS IN LEVEL INSTEAD FOR MAPX (or width) use 17 for now
 bool Entity::isCollidingWithMap(const std::vector<int>& map){
 
-    // Calculate place on map
-    // PASS IN LEVEL INSTEAD FOR MAPX (or width) use 17 for now
-
-    // int xRounded = entityX / 64;
-    //  q = (x + y - 1) / y;
-
-    // Maybe if statements?
-    int xRounded;
-    if(this->direction == 90){
-         xRounded = (entityX  + 63) / 64;
-    } else{
-         xRounded = entityX / 64;
-    }
+    int xRounded = entityX / 64;
     int yRounded = entityY / 64;
-    // int yRounded = (entityY  + 63) / 64;
+    
+    if (this->direction == 90) {
+        xRounded = (entityX + 63) / 64; // Moving right
+    } else if (this->direction == 270) {
+        xRounded = entityX / 64;        // Moving left
+    }
+
+    if (this->direction == 180) {
+        yRounded = (entityY + 63) / 64; // Moving down
+    } else if (this->direction == 0) {
+        yRounded = entityY / 64;        // Moving up
+    }
 
     int levelMapIndex = (yRounded * 17) + xRounded;
 
-    if(map[levelMapIndex] == 0){
-        // SDL_Log("Thing: %d", xRounded);
-        return false;
-    }
-    return true;
+    // Check if the map cell is empty (0 indicates no collision)
+    return map[levelMapIndex] != 0;
 }
 
 // Is map even needed?
