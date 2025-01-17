@@ -109,6 +109,7 @@ void Game::handleKeyboardInput(SDL_Event e){
     int playerMovementSpeed = 16;
     player->direction = 90;
     keyState = SDL_GetKeyboardState(NULL);
+
     if(keyState[SDL_SCANCODE_D]){
         player->playerIdle = false;
         player->direction = 90;
@@ -130,6 +131,7 @@ void Game::handleKeyboardInput(SDL_Event e){
         player->playerIdle = false;
     }
     if(keyState[SDL_SCANCODE_LSHIFT]){
+        // Rewrite or something
         player->speed = 16;
     } else { player->speed = 8;}
 }

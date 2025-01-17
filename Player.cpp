@@ -13,24 +13,40 @@ Player::Player(){
     this->animations = Animations();
 }
 
+// PlayerX % speed?
+
 void Player::handlePlayerMovement(int direction, Level * level){
     // Change direction
     this->direction = direction;
         switch(direction){
             case 0:
-            if(!checkWalkCollision(playerX,playerY-speed, level)) {this->playerY -= speed;}
+              if(!checkWalkCollision(playerX,playerY-speed, level)) {this->playerY -= speed;}
+              else if(playerY % speed > 0){
+                playerY -= playerY % speed;
+              }
             break;
           case 90:
-              if(!checkWalkCollision(playerX + speed, playerY, level)) {this->playerX += speed;}
+              if(!checkWalkCollision(playerX + speed, playerY, level))
+               {this->playerX += speed;}
+               else if(playerX % speed > 0){
+                playerX += playerX % speed;
+               }
             break;
           case 180:
             if(!checkWalkCollision(playerX,playerY+speed, level)) {this->playerY += speed;}
+            else if(playerY % speed > 0){
+              playerY += playerY % speed;
+            }
             break;
           case 270:
             if(!checkWalkCollision(playerX -speed, playerY, level)) {this->playerX -= speed;}
+            else if(playerX % speed > 0){
+                playerX -= playerX % speed;
+               }
             break;
     }
 }
+
 
 // This needs to be rewritten to account for dynamic speed?
 bool Player::checkWalkCollision(int x , int y, Level * level){
@@ -39,6 +55,8 @@ bool Player::checkWalkCollision(int x , int y, Level * level){
     bool isColliding = false;
     int XMin = x / 64;
     int XMax = (x+63) / 64;
+    // int XMin = (x+16) / 64;
+    // int XMax = (x+47) / 64;
     //int XMax = (x+48) / 64;
     int YMin = (y +32) / 64;
     int YMax = (y + 63) / 64;

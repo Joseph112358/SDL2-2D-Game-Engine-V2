@@ -67,7 +67,7 @@ if (this->id == "fireball") {
 }
 }
 
-// Lord have mercy for the code I have written blow
+// Lord have mercy for the code I have written below
 // Redesign or refactor -> we need to check all 4, or at least 2 corners
 bool Entity::isCollidingWithMap(Level * level){
     const std::vector<int>& map = level->wallMap;
@@ -98,6 +98,7 @@ bool Entity::isCollidingWithMap(Level * level){
     xRounded = entityX / 64;
     yRounded = entityY / 64;
     
+    // speed is the position you are next to occupy
     if (this->direction == 90) {
         xRounded = (entityX + 63 + speed) / 64; // Moving right
         yRounded = (entityY + 31) /64;
