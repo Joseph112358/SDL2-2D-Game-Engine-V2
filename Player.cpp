@@ -13,24 +13,45 @@ Player::Player(){
     this->animations = Animations();
 }
 
-void Player::handlePlayerMovement(int direction, Level * level){
+void Player::handlePlayerMovement(int direction, Level* level) {
     // Change direction
     this->direction = direction;
-        switch(direction){
-            case 0:
-            if(!checkWalkCollision(playerX,playerY-speed, level)) {this->playerY -= speed;}
-            break;
-          case 90:
-              if(!checkWalkCollision(playerX + speed, playerY, level)) {this->playerX += speed;}
-            break;
-          case 180:
-            if(!checkWalkCollision(playerX,playerY+speed, level)) {this->playerY += speed;}
-            break;
-          case 270:
-            if(!checkWalkCollision(playerX -speed, playerY, level)) {this->playerX -= speed;}
-            break;
+
+    // Define movement deltas for each direction
+    int dx = 0, dy = 0;
+    switch (direction) {
+        case 0:   dy = -speed; break; // Up
+        case 90:  dx = speed;  break; // Right
+        case 180: dy = speed;  break; // Down
+        case 270: dx = -speed; break; // Left
+        default: return; // Invalid direction, do nothing
+    }
+
+
+
+    // Attempt to move, adjusting position if collision occurs
+    movePlayer(dx, dy, level);
+}
+
+void Player::movePlayer(int dx, int dy, Level* level) {
+    int newPlayerX = playerX + dx;
+    int newPlayerY = playerY + dy;
+
+    if (!checkWalkCollision(newPlayerX, newPlayerY, level)) {
+        // Update position if no collision
+        playerX = newPlayerX;
+        playerY = newPlayerY;
+    } else {
+        // Adjust position to align with the grid
+        if (dx != 0 && playerX % speed != 0) {
+            playerX += (dx > 0 ? speed - playerX % speed : -playerX % speed);
+        }
+        if (dy != 0 && playerY % speed != 0) {
+            playerY += (dy > 0 ? speed - playerY % speed : -playerY % speed);
+        }
     }
 }
+
 
 // This needs to be rewritten to account for dynamic speed?
 bool Player::checkWalkCollision(int x , int y, Level * level){
@@ -39,6 +60,8 @@ bool Player::checkWalkCollision(int x , int y, Level * level){
     bool isColliding = false;
     int XMin = x / 64;
     int XMax = (x+63) / 64;
+    // int XMin = (x+16) / 64;
+    // int XMax = (x+47) / 64;
     //int XMax = (x+48) / 64;
     int YMin = (y +32) / 64;
     int YMax = (y + 63) / 64;
