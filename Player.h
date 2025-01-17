@@ -16,7 +16,7 @@ class Player {
         bool playerIdle;
         Animations animations;
         void handlePlayerMovement(int direction, Level * level);
-        void updatePlayerMovement(bool moveUp, bool moveDown, bool moveLeft, bool moveRight, Level * level);
+        void movePlayer(int dx, int dy, Level* level);
         bool checkWalkCollision(int x, int y, Level * level);
         std::vector<int>  getNeighborTiles(std::vector<int> map, int mapX);
 };

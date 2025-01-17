@@ -13,37 +13,42 @@ Player::Player(){
     this->animations = Animations();
 }
 
-// PlayerX % speed?
-
-void Player::handlePlayerMovement(int direction, Level * level){
+void Player::handlePlayerMovement(int direction, Level* level) {
     // Change direction
     this->direction = direction;
-        switch(direction){
-            case 0:
-              if(!checkWalkCollision(playerX,playerY-speed, level)) {this->playerY -= speed;}
-              else if(playerY % speed > 0){
-                playerY -= playerY % speed;
-              }
-            break;
-          case 90:
-              if(!checkWalkCollision(playerX + speed, playerY, level))
-               {this->playerX += speed;}
-               else if(playerX % speed > 0){
-                playerX += playerX % speed;
-               }
-            break;
-          case 180:
-            if(!checkWalkCollision(playerX,playerY+speed, level)) {this->playerY += speed;}
-            else if(playerY % speed > 0){
-              playerY += playerY % speed;
-            }
-            break;
-          case 270:
-            if(!checkWalkCollision(playerX -speed, playerY, level)) {this->playerX -= speed;}
-            else if(playerX % speed > 0){
-                playerX -= playerX % speed;
-               }
-            break;
+
+    // Define movement deltas for each direction
+    int dx = 0, dy = 0;
+    switch (direction) {
+        case 0:   dy = -speed; break; // Up
+        case 90:  dx = speed;  break; // Right
+        case 180: dy = speed;  break; // Down
+        case 270: dx = -speed; break; // Left
+        default: return; // Invalid direction, do nothing
+    }
+
+
+
+    // Attempt to move, adjusting position if collision occurs
+    movePlayer(dx, dy, level);
+}
+
+void Player::movePlayer(int dx, int dy, Level* level) {
+    int newPlayerX = playerX + dx;
+    int newPlayerY = playerY + dy;
+
+    if (!checkWalkCollision(newPlayerX, newPlayerY, level)) {
+        // Update position if no collision
+        playerX = newPlayerX;
+        playerY = newPlayerY;
+    } else {
+        // Adjust position to align with the grid
+        if (dx != 0 && playerX % speed != 0) {
+            playerX += (dx > 0 ? speed - playerX % speed : -playerX % speed);
+        }
+        if (dy != 0 && playerY % speed != 0) {
+            playerY += (dy > 0 ? speed - playerY % speed : -playerY % speed);
+        }
     }
 }
 
