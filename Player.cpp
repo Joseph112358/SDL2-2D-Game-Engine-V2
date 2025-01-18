@@ -27,8 +27,6 @@ void Player::handlePlayerMovement(int direction, Level* level) {
         default: return; // Invalid direction, do nothing
     }
 
-
-
     // Attempt to move, adjusting position if collision occurs
     movePlayer(dx, dy, level);
 }

@@ -4,29 +4,31 @@
 #include "../Level.h"
 #include <cmath>
 
+enum EntityType { FIREBALL, ENEMY };
+
 int entityMoveSpeed = 4;
-Entity::Entity(int x, int y, std::string id, Sprite * sprite){
+Entity::Entity(SDL_Rect rect, std::string id, Sprite * sprite){
     this->id = id;
-    this->entityX =  x;
-    this->entityY =  y;
+    // this->entityX =  x;
+    // this->entityY =  y;
+    this->rect = rect;
     this->direction = 90;
     this->moving = false;
     this->sprite = sprite;
 }
 
-Entity::Entity(int x, int y, int direction, std::string id, Sprite * sprite){
+Entity::Entity(SDL_Rect rect, int direction, std::string id, Sprite * sprite){
     this->id = id;
-    this->entityX =  x;
-    this->entityY =  y;
+    this->rect = rect;
     this->direction = direction;
     
     // Hacky way of sorting out rotated collision box
     if(direction == 0 || direction == 180){
-        this->width = sprite->height;
-        this->height = sprite->width;
+        this->rect.w = sprite->height;
+        this->rect.h = sprite->width;
     } else {
-        this->width = sprite->width;
-        this->height = sprite->height;
+        this->rect.w = sprite->width;
+        this->rect.h = sprite->height;
     }
 
     this->speed = 8;
@@ -58,11 +60,13 @@ if (this->id == "fireball") {
         default:  y_velocity = -1 * speed; break;
     }
 
+ 
+    // Check if colliding with other entities?
     // Check for collisions with the map
     if (!isCollidingWithMap(level)) {
         // Update entity coordinates if no collision
-        this->entityX += x_velocity;
-        this->entityY += y_velocity;
+        this->rect.x += x_velocity;
+        this->rect.y += y_velocity;
     }
 }
 }
@@ -73,19 +77,19 @@ bool Entity::isCollidingWithMap(Level * level){
     const std::vector<int>& map = level->wallMap;
     int mapX = level->mapX;
 
-    int xRounded = entityX / 64;
-    int yRounded = entityY / 64;
+    int xRounded = rect.x / 64;
+    int yRounded = rect.y / 64;
     
     if (this->direction == 90) {
-        xRounded = (entityX + 63 + speed) / 64; // Moving right
+        xRounded = (rect.x + 63 + speed) / 64; // Moving right
     } else if (this->direction == 270) {
-        xRounded = (entityX - speed) / 64;        // Moving left
+        xRounded = (rect.x - speed) / 64;        // Moving left
     }
 
     if (this->direction == 180) {
-        yRounded = (entityY + 63 + speed) / 64; // Moving down
+        yRounded = (rect.y + 63 + speed) / 64; // Moving down
     } else if (this->direction == 0) {
-        yRounded = (entityY - speed) / 64;        // Moving up
+        yRounded = (rect.y - speed) / 64;        // Moving up
     }
 
     int levelMapIndex = (yRounded * mapX) + xRounded;
@@ -95,24 +99,24 @@ bool Entity::isCollidingWithMap(Level * level){
     
     // CHECKING THE OTHER CORNER
 
-    xRounded = entityX / 64;
-    yRounded = entityY / 64;
+    xRounded = rect.x / 64;
+    yRounded = rect.y / 64;
     
     // speed is the position you are next to occupy
     if (this->direction == 90) {
-        xRounded = (entityX + 63 + speed) / 64; // Moving right
-        yRounded = (entityY + 31) /64;
+        xRounded = (rect.x + 63 + speed) / 64; // Moving right
+        yRounded = (rect.y + 31) /64;
     } else if (this->direction == 270) {
-        xRounded = (entityX - speed) / 64;        // Moving left
-        yRounded = (entityY + 31) /64;
+        xRounded = (rect.x - speed) / 64;        // Moving left
+        yRounded = (rect.y + 31) /64;
     }
 
     if (this->direction == 180) {
-        yRounded = (entityY + 63 + speed) / 64; // Moving down
-        xRounded = (entityX +31) /64;
+        yRounded = (rect.y + 63 + speed) / 64; // Moving down
+        xRounded = (rect.x +31) /64;
     } else if (this->direction == 0) {
-        yRounded = (entityY - speed) / 64;        // Moving up
-        xRounded = (entityX +31) /64;
+        yRounded = (rect.y - speed) / 64;        // Moving up
+        xRounded = (rect.x +31) /64;
     }
 
     levelMapIndex = (yRounded * mapX) + xRounded;
@@ -143,30 +147,3 @@ void Entity::getSpriteTransform(SDL_RendererFlip& flip, double& rotation){
         }
     }
 
-// Is map even needed?
-void Entity::moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map){
-    int distX = std::abs(coords.first - entityX);
-    int distY = std::abs(coords.second - entityY);
-
-    // Move x
-    if( distX != 0){
-        if(entityX > coords.first){
-            entityX -= entityMoveSpeed;
-        } 
-        else if(entityX < coords.first){
-            entityX += entityMoveSpeed;
-        }
-    }
-    // else move y
-    else if(distY !=0){
-        if(entityY > coords.second){
-            entityY -= entityMoveSpeed;
-        } 
-        else if(entityY < coords.second){
-            entityY += entityMoveSpeed;
-        }
-    }
-    else{
-        moving = false;
-    }
-}

@@ -10,20 +10,16 @@
 
 class Entity {
     public:
-        Entity(int x, int y, std::string id, Sprite * sprite);
+        Entity(SDL_Rect rect, std::string id, Sprite * sprite);
 
-        Entity(int x, int y,int direction, std::string id, Sprite * sprite);
+        Entity(SDL_Rect rect, int direction, std::string id, Sprite * sprite);
         ~Entity() {
         }
         std::string id;
-        int entityX;
-        int entityY;
-        int height;
-        int width;
+        SDL_Rect rect;        
         int direction;
         int speed;
         Sprite * sprite;
-
 
         // To be optimised
         bool moving;
@@ -35,7 +31,4 @@ class Entity {
 
         // New function for fireball, will be generic eventually
         bool isCollidingWithMap(Level * level);
-        std::pair<int, int> currentDestination;
-        std::queue<std::pair<int,int>> moveQueue;
-        void moveToGivenPoint(std::pair<int,int> coords, std::vector<int> map);
 };
