@@ -10,14 +10,16 @@ EntityFactory::EntityFactory(){
 Entity * EntityFactory::createEntity(std::string param, int x_pos, int y_pos, int direction){
     if(param == "enemy"){
         Sprite * enemy_sprite = spriteFactory->getSprite("enemy");
-        Entity * entity = new Entity(x_pos, y_pos, direction, param ,enemy_sprite);
+        SDL_Rect rect = {x_pos, y_pos, 64, 64};
+        Entity * entity = new Entity(rect, direction, param ,enemy_sprite);
         SDL_Log("enemy");
         return entity;
 
     }
     else if(param == "fireball"){
         Sprite * fireball_sprite = spriteFactory->getSprite("fireball");
-        Entity * entity = new Entity(x_pos, y_pos, direction, param, fireball_sprite);
+        SDL_Rect rect = {x_pos, y_pos, 64, 32};
+        Entity * entity = new Entity(rect, direction, param, fireball_sprite);
         SDL_Log("fireball");
         return entity;
     }

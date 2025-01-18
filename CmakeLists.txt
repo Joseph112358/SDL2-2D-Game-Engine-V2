@@ -6,7 +6,7 @@ find_package(SDL2_image REQUIRED)
 
 add_executable(hello "main.cpp" "game.cpp" "level.cpp" "player.cpp" "animations/AnimationHandler.cpp" 
 "entities/Entity.cpp" "entities/EntityFactory.cpp" "entities/SpriteFactory.cpp"
-"animations/Animations.cpp" "UserInterface.cpp" "Sprite.cpp")
+"animations/Animations.cpp" "UserInterface.cpp" "Sprite.cpp" "Utils.cpp")
 target_include_directories(hello PRIVATE "/res")
 
 target_link_libraries(hello SDL2::SDL2)

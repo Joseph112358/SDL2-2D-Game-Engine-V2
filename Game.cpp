@@ -295,7 +295,8 @@ void Game::renderPlayer(Player * player){
 void Game::drawEntities(std::vector<Entity*> entities){
     for (Entity* entity : entities) {
         drawEntity(entity);
-        drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
+        // drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
+        drawCollisionBox(entity->rect.x,entity->rect.y,entity->rect.w,entity->rect.h);
     }
 
 }
@@ -306,17 +307,14 @@ void Game::drawEntities(std::vector<Entity*> entities){
 void Game::drawEntity(Entity * entity){
 
     // Work out distance to player
-    int xOffset = entity->entityX - player->playerX; 
-    int yOffset = entity->entityY - player->playerY;
+    int xOffset = entity->rect.x - player->playerX; 
+    int yOffset = entity->rect.y - player->playerY;
     // check if in range maybe?
     int entityScreenX = kMiddleOfScreenX + xOffset;
     int entityScreenY = kMiddleOfScreenY + yOffset;
-
-    // The entity width and height need to be set need to be set 
-    // int entity_width = entity->sprite->width; // These are wrong
-    // int entity_height = entity->sprite->height;
-    int entity_width = entity->width;
-    int entity_height = entity->height;
+   
+    int entity_width = entity->rect.w;
+    int entity_height = entity->rect.h;
 
     SDL_Rect block { entityScreenX, entityScreenY,entity_width,entity_height};
     if(entity->direction == 0 || entity->direction == 180){
