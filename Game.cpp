@@ -5,7 +5,7 @@
 #include <vector>
 #include "Level.h"
 #include "Player.h"
-// #include "entities/Entity.h"
+#include "entities/Entity.h"
 #include "UserInterface.h"
 #include <cmath>
 #include <queue>
@@ -44,8 +44,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
-    // this->entityFactory = new EntityFactory();
-    this->entityFactory2 = new EntityFactory2();
+    this->entityFactory = new EntityFactory();
 
     // Temporary, have a list of interactables (store coords as key identifier for now
     // which the user can scroll through)
@@ -92,13 +91,13 @@ void Game::handleKeyInput(SDL_Event e){
         }
         if(e.key.keysym.sym == SDLK_e){
             // Get current floor tile and change its state?
-            Entity2 * entity = entityFactory2->createEntity("enemy", this->player->playerX , this->player->playerY);
+            Entity * entity = entityFactory->createEntity("enemy", this->player->playerX , this->player->playerY);
             this->entities.push_back(entity);
         
         }
         if(e.key.keysym.sym == SDLK_f){
             
-            Entity2* entity = entityFactory2->createEntity( "fireball", this->player->playerX,this->player->playerY,this->player->direction);
+            Entity* entity = entityFactory->createEntity( "fireball", this->player->playerX,this->player->playerY,this->player->direction);
             this->entities.push_back(entity);
         }
          if(e.key.keysym.sym == SDLK_y){
@@ -163,8 +162,8 @@ void Game::update(){
     if(entities.size() >1){
         for(size_t i = 0; i < entities.size() -1; ++i){
             for(size_t j = i + 1; j < entities.size(); ++j){
-                Entity2* en1 = entities[i];
-                Entity2* en2 = entities[j];
+                Entity* en1 = entities[i];
+                Entity* en2 = entities[j];
                 if (Utils::isCollidingAABB(en1->rect, en2->rect)) {
                     collision_occuring = true;
                 // SDL_Log("Collision detected between entity %zu and %zu!", i, j);
@@ -319,8 +318,8 @@ void Game::renderPlayer(Player * player){
 }
 
 
-void Game::drawEntities(std::vector<Entity2*> entities){
-    for (Entity2* entity : entities) {
+void Game::drawEntities(std::vector<Entity*> entities){
+    for (Entity* entity : entities) {
         drawEntity(entity);
         // drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
         drawCollisionBox(entity->rect.x,entity->rect.y,entity->rect.w,entity->rect.h);
@@ -331,7 +330,7 @@ void Game::drawEntities(std::vector<Entity2*> entities){
 
 
 // This should not be here
-void Game::drawEntity(Entity2 * entity){
+void Game::drawEntity(Entity * entity){
 
     // Work out distance to player
     int xOffset = entity->rect.x - player->playerX; 

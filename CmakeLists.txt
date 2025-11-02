@@ -18,8 +18,8 @@ add_executable(hello
     level.cpp
     player.cpp
     animations/AnimationHandler.cpp
-    entities/Entity2.cpp
-    entities/EntityFactory2.cpp
+    entities/Entity.cpp
+    entities/EntityFactory.cpp
     entities/Fireball.cpp
     entities/SpriteFactory.cpp
     animations/Animations.cpp

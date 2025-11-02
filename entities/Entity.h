@@ -1,34 +1,27 @@
 #pragma once
-#include <vector>
-#include <iostream>
-#include <SDL_image.h>
-#include "SpriteFactory.h"
 #include "../Sprite.h"
 #include "../Level.h"
-#include <queue>
-
+#include <SDL.h>
+#include <string>
 
 class Entity {
-    public:
-        Entity(SDL_Rect rect, std::string id, Sprite * sprite);
+public:
+    Entity(SDL_Rect rect, const std::string& id, Sprite* sprite);              // default direction
+    Entity(SDL_Rect rect, int direction, const std::string& id, Sprite* sprite);
 
-        Entity(SDL_Rect rect, int direction, std::string id, Sprite * sprite);
-        ~Entity() {
-        }
-        std::string id;
-        SDL_Rect rect;        
-        int direction;
-        int speed;
-        Sprite * sprite;
+    virtual ~Entity() {}
 
-        // To be optimised
-        bool moving;
+    virtual void update(Level* level);        // subclasses override
+    // virtual void render(SDL_Renderer* renderer);
+    virtual bool isCollidingWithMap(Level* level);
 
+// protected:
+    SDL_Rect rect;
+    int direction;
+    std::string id;
+    int speed = 8;
+    bool moving = false;
+    Sprite* sprite = nullptr;
 
-        void update(Level * level);
-
-        void getSpriteTransform(SDL_RendererFlip& flip, double& rotation);
-
-        // New function for fireball, will be generic eventually
-        bool isCollidingWithMap(Level * level);
+    void getSpriteTransform(SDL_RendererFlip& flip, double& rotation);
 };

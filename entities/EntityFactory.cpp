@@ -1,30 +1,33 @@
-#include "Entity.h"
 #include "EntityFactory.h"
-#include "SpriteFactory.h"
-#include <string>
+#include "Fireball.h"
+#include "Enemy.h"   // Make sure Enemy also inherits Entity2
+#include <SDL.h>
 
-EntityFactory::EntityFactory(){
-    this->spriteFactory = new SpriteFactory();
-};
+EntityFactory::EntityFactory() {
+    spriteFactory = new SpriteFactory();
+}
 
-Entity * EntityFactory::createEntity(std::string param, int x_pos, int y_pos, int direction){
-    if(param == "enemy"){
-        Sprite * enemy_sprite = spriteFactory->getSprite("enemy");
-        SDL_Rect rect = {x_pos, y_pos, 64, 64};
-        Entity * entity = new Entity(rect, direction, param ,enemy_sprite);
-        SDL_Log("enemy");
-        return entity;
+EntityFactory::~EntityFactory() {
+    delete spriteFactory;
+}
 
+Entity* EntityFactory::createEntity(const std::string& type, int x, int y, int direction) {
+    if (type == "enemy") {
+        Sprite* sprite = spriteFactory->getSprite("enemy");
+        SDL_Rect rect = { x, y, 64, 64 };
+        return new Enemy(rect, direction, sprite, 100);  // health = 100
     }
-    else if(param == "fireball"){
-        Sprite * fireball_sprite = spriteFactory->getSprite("fireball");
-        SDL_Rect rect = {x_pos, y_pos, 64, 32};
-        Entity * entity = new Entity(rect, direction, param, fireball_sprite);
-        SDL_Log("fireball");
-        return entity;
+    else if (type == "fireball") {
+        Sprite* sprite = spriteFactory->getSprite("fireball");
+        SDL_Rect rect = { x, y, 64, 32 };
+        return new Fireball(rect, direction, sprite);
     }
-};
 
-Entity* EntityFactory::createEntity(std::string param, int x_pos, int y_pos) {
-    return createEntity(param, x_pos, y_pos, 90); // Call the overloaded function with default direction
+    // if (type == "fireball") {
+    //     Sprite* sprite = spriteFactory->getSprite("fireball");
+    //     SDL_Rect rect = { x, y, 64, 32 };
+    //     return new Fireball(rect, direction, sprite);
+    // }
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unknown entity type: %s", type.c_str());
+    return nullptr;
 }

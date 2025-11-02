@@ -1,11 +1,11 @@
 // Enemy.h
 #pragma once
-#include "Entity2.h"
+#include "Entity.h"
 
-class Enemy : public Entity2 {
+class Enemy : public Entity {
 public:
     Enemy(SDL_Rect rect, int direction, Sprite* sprite, int health = 100)
-        : Entity2(rect, direction, "enemy", sprite), health(health) {}
+        : Entity(rect, direction, "enemy", sprite), health(health) {}
 
     void takeDamage(int dmg) {
         health -= dmg;

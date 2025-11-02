@@ -6,11 +6,11 @@
 #include<vector>
 #include "Level.h"
 #include "Player.h"
-// #include "entities/Entity.h"
-#include "entities/Entity2.h" // new
+#include "entities/Entity.h"
+// #include "entities/Entity2.h" // new
 #include "entities/Fireball.h"
 // #include "entities/EntityFactory.h"
-#include "entities/EntityFactory2.h"
+#include "entities/EntityFactory.h"
 #include "UserInterface.h"
 #include "Sprite.h"
 #include <list>
@@ -26,12 +26,10 @@ class Game {
 
         UserInterface * userInterface;
         
-        EntityFactory2 * entityFactory2;
+        EntityFactory * entityFactory;
 
-        // EntityFactory * entityFactory;
-
-        // std::vector<Entity *> entities;
-         std::vector<Entity2 *> entities;
+        std::vector<Entity *> entities;
+        
         std::list<int> interactablesList;
 
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
@@ -44,8 +42,8 @@ class Game {
         void drawMap();
         void drawWalls();
         void drawFloor();
-        void drawEntity(Entity2 * entity);
-        void drawEntities(std::vector<Entity2*> entities);
+        void drawEntity(Entity * entity);
+        void drawEntities(std::vector<Entity*> entities);
         void createNewEntity(int x_pos, int y_pos);
     
         void renderPlayer(Player * player);
