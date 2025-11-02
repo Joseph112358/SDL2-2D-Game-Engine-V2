@@ -6,10 +6,10 @@
 #include<vector>
 #include "Level.h"
 #include "Player.h"
-#include "entities/Entity.h"
+// #include "entities/Entity.h"
 #include "entities/Entity2.h" // new
 #include "entities/Fireball.h"
-#include "entities/EntityFactory.h"
+// #include "entities/EntityFactory.h"
 #include "entities/EntityFactory2.h"
 #include "UserInterface.h"
 #include "Sprite.h"
@@ -28,7 +28,7 @@ class Game {
         
         EntityFactory2 * entityFactory2;
 
-        EntityFactory * entityFactory;
+        // EntityFactory * entityFactory;
 
         // std::vector<Entity *> entities;
          std::vector<Entity2 *> entities;

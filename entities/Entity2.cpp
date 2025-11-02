@@ -60,7 +60,9 @@ bool Entity2::isCollidingWithMap(Level* level) {
 //     rotation = 0;
 // }
 
+
 // Maybe this should be in Fireball?
+// Maybe this should definitly be in Sprite?
 void Entity2::getSpriteTransform(SDL_RendererFlip& flip, double& rotation){
     switch (direction) {
         case 90:

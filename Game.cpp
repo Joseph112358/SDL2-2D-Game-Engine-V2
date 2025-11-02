@@ -5,7 +5,7 @@
 #include <vector>
 #include "Level.h"
 #include "Player.h"
-#include "entities/Entity.h"
+// #include "entities/Entity.h"
 #include "UserInterface.h"
 #include <cmath>
 #include <queue>
@@ -44,7 +44,7 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->player = new Player();
     this->userInterface = new UserInterface();
-    this->entityFactory = new EntityFactory();
+    // this->entityFactory = new EntityFactory();
     this->entityFactory2 = new EntityFactory2();
 
     // Temporary, have a list of interactables (store coords as key identifier for now
@@ -92,16 +92,13 @@ void Game::handleKeyInput(SDL_Event e){
         }
         if(e.key.keysym.sym == SDLK_e){
             // Get current floor tile and change its state?
-            // Entity * entity = entityFactory->createEntity("enemy", this->player->playerX , this->player->playerY);
-            // this->entities.push_back(entity);
+            Entity2 * entity = entityFactory2->createEntity("enemy", this->player->playerX , this->player->playerY);
+            this->entities.push_back(entity);
         
         }
         if(e.key.keysym.sym == SDLK_f){
-            //  Entity * entity = entityFactory->createEntity("fireball", this->player->playerX , this->player->playerY,this->player->direction);
-            // this->entities.push_back(entity);
+            
             Entity2* entity = entityFactory2->createEntity( "fireball", this->player->playerX,this->player->playerY,this->player->direction);
-
-            // Entity * entity = entityFactory2->createEntity("fireball", this->player->playerX , this->player->playerY,this->player->direction);
             this->entities.push_back(entity);
         }
          if(e.key.keysym.sym == SDLK_y){
