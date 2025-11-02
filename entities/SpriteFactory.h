@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include "../Sprite.h"
+#include <string>
 
 class SpriteFactory {
     public:

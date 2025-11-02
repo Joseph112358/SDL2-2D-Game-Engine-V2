@@ -69,4 +69,12 @@
         "unordered_map": "cpp",
         "xhash": "cpp"
     },
+    "terminal.integrated.profiles.windows": {
+        "MSYS2 MinGW64": {
+            "path": "C:\\msys64\\mingw64\\msys2.exe",
+            "args": ["-mingw64"],
+            "icon": "terminal-cmd"
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "MSYS2 MinGW64"
 }
