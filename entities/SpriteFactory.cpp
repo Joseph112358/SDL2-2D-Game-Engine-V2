@@ -1,6 +1,8 @@
 #include <unordered_map>
 #include "../Sprite.h"
 #include "SpriteFactory.h"
+#include <string>
+
 
 SpriteFactory::SpriteFactory(){
     spriteMap = std::unordered_map<std::string, Sprite*>();
@@ -23,8 +25,8 @@ Sprite* SpriteFactory::getSprite(std::string key){
         return enemy_sprite;
     } 
     
-    // else {
-    //     return nullptr; // Example, replace with your desired behavior
-    //   }
+    else {
+        return nullptr; // Example, replace with your desired behavior
+      }
   
 }

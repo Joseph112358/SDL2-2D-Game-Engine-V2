@@ -11,6 +11,7 @@
 #include <queue>
 #include <SDL_image.h>
 #include "animations/AnimationHandler.h"
+#include "Utils.h"
 #include <list>
 // TODO move all textures over to one atlas
 // A texture loader might not be a bad idea?
@@ -23,7 +24,7 @@ SDL_Texture* floorTexture = nullptr;
 AnimationHandler * animationHandler = new AnimationHandler();
 
 
-
+bool collision_occuring = false;
 bool clearEntities;
 
 const Uint8 * keyState;
@@ -31,6 +32,8 @@ const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
 const int TILE_UNIT_SIZE = 64;
 
 Game::Game(){
+    int joe = 2;
+    // bool collision_occuring = false;
 };
 Game::~Game(){
 
@@ -152,6 +155,30 @@ void Game::update(){
     for (auto* entity : entities) {
     if (entity) {
         entity->update(this->level);
+    }
+
+    // TODO: Probably devise an algorithm to better solve this, otherwise always n*n
+    collision_occuring = false;
+    
+    if(entities.size() >1){
+        for(size_t i = 0; i < entities.size() -1; ++i){
+            for(size_t j = i + 1; j < entities.size(); ++j){
+                Entity* en1 = entities[i];
+                Entity* en2 = entities[j];
+                if (Utils::isCollidingAABB(en1->rect, en2->rect)) {
+                    collision_occuring = true;
+                // SDL_Log("Collision detected between entity %zu and %zu!", i, j);
+                // Optionally handle collision here, e.g.:
+                // en1->onCollision(en2);
+                // en2->onCollision(en1);
+                }
+            }
+     }
+    }
+
+
+    if(collision_occuring){
+         SDL_Log("Collision detected!");
     }
 }
 

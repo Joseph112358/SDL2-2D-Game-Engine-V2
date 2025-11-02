@@ -10,3 +10,9 @@ Tech stack / requirements
 * C++ compiler
 * SDL2 graphics library
 * A build tool (e.g. Makefile or CMake)
+
+To compile (in VS code)
+in the root directory
+Press Ctrl + Shift + p to open the vs code command palette 
+Press cmake build
+Your program should compile
