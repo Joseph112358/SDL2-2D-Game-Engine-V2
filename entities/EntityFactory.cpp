@@ -15,7 +15,7 @@ Entity* EntityFactory::createEntity(const std::string& type, int x, int y, int d
     if (type == "enemy") {
         Sprite* sprite = spriteFactory->getSprite("enemy");
         SDL_Rect rect = { x, y, 64, 64 };
-        return new Enemy(rect, direction, sprite, 100);  // health = 100
+        return new Enemy(rect, direction, sprite, 4);  // health = 4
     }
     else if (type == "fireball") {
         Sprite* sprite = spriteFactory->getSprite("fireball");

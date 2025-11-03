@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "entities/Entity.h"
 #include "UserInterface.h"
+#include "entities/Enemy.h"
 #include <cmath>
 #include <queue>
 #include <SDL_image.h>
@@ -364,6 +365,35 @@ void Game::drawEntity(Entity * entity){
     // SDL_RenderCopy(renderer,miscTexture,&AtlasCoords,&block);
     SDL_RenderCopyEx(renderer, miscTexture, &AtlasCoords, &block, rotation, nullptr, flip);
 
+
+    // FIX THIS NOW!
+    // ---- Draw health bar if entity is an Enemy ----
+    if (Enemy* e = dynamic_cast<Enemy*>(entity)) {
+    int barWidth = entity->sprite->width; // use original sprite width = 64
+    // int barHeight = 5;
+    // int x = block.x;
+    // int y = block.y + block.h + 2;
+    int x = entityScreenX;
+    int y = entityScreenY + 64;
+
+    SDL_Log("health: %d / %d", e->getHealth(), e->getMaxHealth());
+
+    float healthFraction = static_cast<float>(e->getHealth()) / e->getMaxHealth();
+    // SDL_Log("max health:  %d",  e->getHealth());
+    int healthWidth = static_cast<int>(64 * healthFraction);
+
+    // Red background
+    // SDL_Rect bgRect = { x, y, barWidth, barHeight };
+    SDL_Rect bgRect = { x, y, 64, 5 };
+    SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
+    SDL_RenderFillRect(renderer, &bgRect);
+
+    // Green foreground
+    // SDL_Rect fgRect = { x, y, healthWidth, barHeight };
+    // SDL_Rect fgRect = { x, y, healthWidth, 5 };
+    // SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+    // SDL_RenderFillRect(renderer, &fgRect);
+}
  
 }
 

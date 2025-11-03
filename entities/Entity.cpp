@@ -2,7 +2,7 @@
 #include <vector>
 
 Entity::Entity(SDL_Rect rect, const std::string& id, Sprite* sprite)
-    : rect(rect), id(id), sprite(sprite), direction(90), moving(false), speed(8) {}
+    : rect(rect), id(id), sprite(sprite), direction(0), moving(false), speed(8) {}
 
 Entity::Entity(SDL_Rect rect, int direction, const std::string& id, Sprite* sprite)
     : rect(rect), id(id), sprite(sprite), direction(direction), moving(false), speed(8)
