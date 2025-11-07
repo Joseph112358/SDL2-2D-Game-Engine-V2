@@ -13,6 +13,8 @@
 #include <SDL_image.h>
 #include "animations/AnimationHandler.h"
 #include "Utils.h"
+#include <algorithm>
+#include <memory>
 #include <list>
 // TODO move all textures over to one atlas
 // A texture loader might not be a bad idea?
@@ -52,10 +54,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     this->interactablesList = std::list<int>();
 
-    // Entity * entity_first = new Entity(320,320, enemy_sprite);
-    // Entity * entity_first = entityFactory->createEntity("fireball", 0 , 0);
-    // this->entities.push_back(entity_first);
-
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
 
@@ -91,15 +89,13 @@ void Game::handleKeyInput(SDL_Event e){
         this->userInterface->toggleInventoryShown();
         }
         if(e.key.keysym.sym == SDLK_e){
-            // Get current floor tile and change its state?
-            Entity * entity = entityFactory->createEntity("enemy", this->player->playerX , this->player->playerY);
-            this->entities.push_back(entity);
-        
+            auto entity = entityFactory->createEntity("enemy",player->playerX, player->playerY, 90);
+            this->entities.push_back(std::move(entity));
         }
         if(e.key.keysym.sym == SDLK_f){
-            
-            Entity* entity = entityFactory->createEntity( "fireball", this->player->playerX,this->player->playerY,this->player->direction);
-            this->entities.push_back(entity);
+            // Create a fireball at player position and direction
+            auto entity = entityFactory->createEntity("fireball", this->player->playerX, this->player->playerY, this->player->direction);
+            this->entities.push_back(std::move(entity));    
         }
          if(e.key.keysym.sym == SDLK_y){
             clearEntities = true;
@@ -144,17 +140,14 @@ void Game::update(){
 
     if(clearEntities){
 
-    for (auto& entity : entities) {
-    delete entity;
-    }
-
     entities.clear();
     clearEntities = false;
     }
 
-    for (auto* entity : entities) {
+    for (auto& entity : entities) {
     if (entity) {
         entity->update(this->level);
+    }
     }
 
     // TODO: Probably devise an algorithm to better solve this, otherwise always n*n
@@ -163,8 +156,8 @@ void Game::update(){
     if(entities.size() >1){
         for(size_t i = 0; i < entities.size() -1; ++i){
             for(size_t j = i + 1; j < entities.size(); ++j){
-                Entity* en1 = entities[i];
-                Entity* en2 = entities[j];
+            Entity* en1 = entities[i].get();
+            Entity* en2 = entities[j].get();
                 if (Utils::isCollidingAABB(en1->rect, en2->rect)) {
                     collision_occuring = true;
                 // SDL_Log("Collision detected between entity %zu and %zu!", i, j);
@@ -176,13 +169,28 @@ void Game::update(){
      }
     }
 
+    // Do damage first?
 
+ entities.erase(
+    std::remove_if(
+        entities.begin(),
+        entities.end(),
+        [](const std::unique_ptr<Entity>& e) {
+            if(e->isMarkedForDeletion()){
+                SDL_Log("Deleting entity: %s at (%d,%d)", e->id.c_str(), e->rect.x, e->rect.y);
+                return true;
+            }
+            return false;
+        }
+    ),
+    entities.end()
+);
+ 
+
+// This is just for testing
     if(collision_occuring){
          SDL_Log("Collision detected!");
     }
-}
-
-    
 }
 
 void Game::drawMap(){
@@ -318,15 +326,18 @@ void Game::renderPlayer(Player * player){
   
 }
 
+void Game::drawEntities(const std::vector<std::unique_ptr<Entity>>& entities) {
+    for (const auto& entity : entities) {
+        if (!entity) continue;  // safety check
 
-void Game::drawEntities(std::vector<Entity*> entities){
-    for (Entity* entity : entities) {
-        drawEntity(entity);
-        // drawCollisionBox(entity->entityX,entity->entityY,entity->width,entity->height);
-        drawCollisionBox(entity->rect.x,entity->rect.y,entity->rect.w,entity->rect.h);
+        drawEntity(entity.get());  // pass raw pointer to drawEntity
+
+        // Draw collision box using entity's rect
+        drawCollisionBox(entity->rect.x, entity->rect.y,
+                         entity->rect.w, entity->rect.h);
     }
-
 }
+
 
 
 
@@ -376,7 +387,7 @@ void Game::drawEntity(Entity * entity){
     int x = entityScreenX;
     int y = entityScreenY + 64;
 
-    SDL_Log("health: %d / %d", e->getHealth(), e->getMaxHealth());
+    // SDL_Log("health: %d / %d", e->getHealth(), e->getMaxHealth());
 
     float healthFraction = static_cast<float>(e->getHealth()) / e->getMaxHealth();
     // SDL_Log("max health:  %d",  e->getHealth());

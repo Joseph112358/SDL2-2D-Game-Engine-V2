@@ -22,6 +22,14 @@ public:
     int speed = 8;
     bool moving = false;
     Sprite* sprite = nullptr;
+    
 
     void getSpriteTransform(SDL_RendererFlip& flip, double& rotation);
+
+     // --- Deletion system ---
+    void markForDeletion() { markedForDeletion = true; }
+    bool isMarkedForDeletion() const { return markedForDeletion; }
+
+    protected:
+    bool markedForDeletion = false;
 };

@@ -1,5 +1,7 @@
 #include "Fireball.h"
 #include "../Level.h"
+#include <SDL.h>
+
 
 void Fireball::update(Level* level) {
     int x_velocity = 0;
@@ -12,7 +14,10 @@ void Fireball::update(Level* level) {
         default: y_velocity = -speed; break;
     }
 
-    if (!isCollidingWithMap(level)) {
+    if(isCollidingWithMap(level)) {
+        SDL_Log("Collision with map detected");
+        markForDeletion();
+    } else {
         rect.x += x_velocity;
         rect.y += y_velocity;
     }

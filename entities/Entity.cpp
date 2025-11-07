@@ -2,11 +2,15 @@
 #include <vector>
 
 Entity::Entity(SDL_Rect rect, const std::string& id, Sprite* sprite)
-    : rect(rect), id(id), sprite(sprite), direction(0), moving(false), speed(8) {}
+    : rect(rect), id(id), sprite(sprite), direction(0), moving(false), speed(8) {
+        // SDL_Log("Here in entity 1");
+    }
 
 Entity::Entity(SDL_Rect rect, int direction, const std::string& id, Sprite* sprite)
     : rect(rect), id(id), sprite(sprite), direction(direction), moving(false), speed(8)
 {
+    // SDL_Log("Here in entity 2");
+
     if (direction == 0 || direction == 180) {
         // swap width and height for vertical movement
         std::swap(this->rect.w, this->rect.h);

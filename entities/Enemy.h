@@ -1,12 +1,9 @@
-// Enemy.h
 #pragma once
 #include "Entity.h"
 
 class Enemy : public Entity {
 public:
-    Enemy(SDL_Rect rect, int direction, Sprite* sprite, int health = 4)
-        :  Entity(rect, direction, "enemy", sprite),
-          health(maxHealth), maxHealth(maxHealth) {}
+    Enemy(SDL_Rect rect, int direction, Sprite* sprite, int health = 4);
 
     void takeDamage(int dmg) {
         health -= dmg;
@@ -16,7 +13,7 @@ public:
     bool isAlive() const { return alive; }
 
     int getHealth() const { return health; }
-    int getMaxHealth() const { return maxHealth; } // store maxHealth in constructor
+    int getMaxHealth() const { return maxHealth; }
 
 private:
     int health;
