@@ -1,30 +1,30 @@
-#include "Entity.h"
 #include "EntityFactory.h"
-#include "SpriteFactory.h"
-#include <string>
+#include "memory"
+#include "Fireball.h"
+#include "Enemy.h"   // Make sure Enemy also inherits Entity2
+#include <SDL.h>
 
-EntityFactory::EntityFactory(){
-    this->spriteFactory = new SpriteFactory();
-};
+EntityFactory::EntityFactory() {
+    spriteFactory = new SpriteFactory();
+}
 
-Entity * EntityFactory::createEntity(std::string param, int x_pos, int y_pos, int direction){
-    if(param == "enemy"){
-        Sprite * enemy_sprite = spriteFactory->getSprite("enemy");
-        SDL_Rect rect = {x_pos, y_pos, 64, 64};
-        Entity * entity = new Entity(rect, direction, param ,enemy_sprite);
-        SDL_Log("enemy");
-        return entity;
+EntityFactory::~EntityFactory() {
+    delete spriteFactory;
+}
 
+std::unique_ptr<Entity> EntityFactory::createEntity(const std::string& type, int x, int y, int direction) {
+    if (type == "enemy") {
+        SDL_Log("creating enemy here in the factory");
+        Sprite* sprite = spriteFactory->getSprite("enemy");
+        SDL_Rect rect = { x, y, 64, 64 };
+        return std::make_unique<Enemy>(rect, direction, sprite, 4);  // health = 4
     }
-    else if(param == "fireball"){
-        Sprite * fireball_sprite = spriteFactory->getSprite("fireball");
-        SDL_Rect rect = {x_pos, y_pos, 64, 32};
-        Entity * entity = new Entity(rect, direction, param, fireball_sprite);
-        SDL_Log("fireball");
-        return entity;
+    else if (type == "fireball") {
+        Sprite* sprite = spriteFactory->getSprite("fireball");
+        SDL_Rect rect = { x, y, 64, 32 };
+        return std::make_unique<Fireball>(rect, direction, sprite);
     }
-};
 
-Entity* EntityFactory::createEntity(std::string param, int x_pos, int y_pos) {
-    return createEntity(param, x_pos, y_pos, 90); // Call the overloaded function with default direction
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Unknown entity type: %s", type.c_str());
+    return nullptr;
 }

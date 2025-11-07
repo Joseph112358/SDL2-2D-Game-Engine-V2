@@ -1,16 +1,15 @@
-#ifndef ENTITY_FACTORY_H
-#define ENTITY_FACTORY_H
+#pragma once
 #include <string>
-
 #include "Entity.h"
+#include "memory"
+#include "SpriteFactory.h"
 
 class EntityFactory {
-    public:
-        EntityFactory();
-        Entity * createEntity(std::string param, int x_pos, int y_pos);
-        Entity * createEntity(std::string param, int x_pos, int y_pos, int direction);
-        SpriteFactory * spriteFactory;
-        
-};
+public:
+    EntityFactory();
+    ~EntityFactory();
+    std::unique_ptr<Entity> createEntity(const std::string& type, int x, int y, int direction = 90);
 
-#endif
+private:
+    SpriteFactory* spriteFactory;
+};

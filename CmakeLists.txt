@@ -19,7 +19,9 @@ add_executable(hello
     player.cpp
     animations/AnimationHandler.cpp
     entities/Entity.cpp
+    entities/Enemy.cpp
     entities/EntityFactory.cpp
+    entities/Fireball.cpp
     entities/SpriteFactory.cpp
     animations/Animations.cpp
     UserInterface.cpp

@@ -7,8 +7,12 @@
 #include "Level.h"
 #include "Player.h"
 #include "entities/Entity.h"
+// #include "entities/Entity2.h" // new
+#include "entities/Fireball.h"
+// #include "entities/EntityFactory.h"
 #include "entities/EntityFactory.h"
 #include "UserInterface.h"
+#include <memory>
 #include "Sprite.h"
 #include <list>
 
@@ -22,10 +26,11 @@ class Game {
         Player * player;
 
         UserInterface * userInterface;
-
+        
         EntityFactory * entityFactory;
 
-        std::vector<Entity *> entities;
+        // std::vector<Entity *> entities;
+        std::vector<std::unique_ptr<Entity>> entities;
 
         std::list<int> interactablesList;
 
@@ -39,8 +44,11 @@ class Game {
         void drawMap();
         void drawWalls();
         void drawFloor();
+
+
         void drawEntity(Entity * entity);
-        void drawEntities(std::vector<Entity*> entities);
+        void drawEntities(const std::vector<std::unique_ptr<Entity>>& entities);
+    
         void createNewEntity(int x_pos, int y_pos);
     
         void renderPlayer(Player * player);
