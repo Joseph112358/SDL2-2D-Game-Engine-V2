@@ -7,7 +7,7 @@ public:
 
     void takeDamage(int dmg) {
         health -= dmg;
-        if (health <= 0) alive = false;
+        if (health <= 0) alive = false, markForDeletion();
     }
 
     bool isAlive() const { return alive; }

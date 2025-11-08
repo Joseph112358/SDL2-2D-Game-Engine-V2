@@ -160,10 +160,9 @@ void Game::update(){
             Entity* en2 = entities[j].get();
                 if (Utils::isCollidingAABB(en1->rect, en2->rect)) {
                     collision_occuring = true;
-                // SDL_Log("Collision detected between entity %zu and %zu!", i, j);
-                // Optionally handle collision here, e.g.:
-                // en1->onCollision(en2);
-                // en2->onCollision(en1);
+        
+                    entities[i]->onCollision(entities[j].get());
+                    entities[j]->onCollision(entities[i].get());
                 }
             }
      }

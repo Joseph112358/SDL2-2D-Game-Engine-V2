@@ -10,4 +10,6 @@ public:
         }
 
     void update(Level* level) override;
+    void onCollision(Entity* other) override;
+    
 };

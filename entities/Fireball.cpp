@@ -1,5 +1,7 @@
 #include "Fireball.h"
+#include "Entity.h"
 #include "../Level.h"
+#include "Enemy.h"
 #include <SDL.h>
 
 
@@ -20,5 +22,14 @@ void Fireball::update(Level* level) {
     } else {
         rect.x += x_velocity;
         rect.y += y_velocity;
+    }
+}
+
+void Fireball::onCollision(Entity* other) {
+    // Only care if it hits an enemy
+    if (Enemy* enemy = dynamic_cast<Enemy*>(other)) {
+        SDL_Log("Fireball hit an enemy!");
+        enemy->takeDamage(1);  // Or whatever method you have
+        markForDeletion();      // Destroy fireball after hitting
     }
 }
