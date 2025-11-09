@@ -1,4 +1,3 @@
-// Enemy.cpp
 #include "Enemy.h"
 #include <SDL.h>
 
@@ -10,6 +9,7 @@ Enemy::Enemy(SDL_Rect rect, int direction, Sprite* sprite, int health)
         SDL_Log("Enemy constructed: health=%d, maxHealth=%d at %p", health, maxHealth, this);
 
     }
+
 
 // void Enemy::update(Level* level) {
 //     // TODO: basic AI, pathfinding, etc.

@@ -11,6 +11,8 @@ public:
 
     virtual ~Entity() {}
 
+    virtual void onCollision(Entity* other) {}  // Polymorphic
+
     virtual void update(Level* level);        // subclasses override
     // virtual void render(SDL_Renderer* renderer);
     virtual bool isCollidingWithMap(Level* level);
