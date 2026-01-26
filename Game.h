@@ -32,7 +32,7 @@ class Game {
         // std::vector<Entity *> entities;
         std::vector<std::unique_ptr<Entity>> entities;
 
-        std::list<int> interactablesList;
+        // std::list<int> interactablesList;
 
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
 

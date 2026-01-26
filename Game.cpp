@@ -49,11 +49,6 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
     this->userInterface = new UserInterface();
     this->entityFactory = new EntityFactory();
 
-    // Temporary, have a list of interactables (store coords as key identifier for now
-    // which the user can scroll through)
-
-    this->interactablesList = std::list<int>();
-
     int flags = 0; 
     if(fullscreen){flags = SDL_WINDOW_FULLSCREEN;}
 
@@ -88,7 +83,7 @@ void Game::handleKeyInput(SDL_Event e){
         if(e.key.keysym.sym == SDLK_m){
         this->userInterface->toggleInventoryShown();
         }
-        if(e.key.keysym.sym == SDLK_e){
+        if(e.key.keysym.sym == SDLK_b){
             auto entity = entityFactory->createEntity("enemy",player->playerX, player->playerY, 90);
             this->entities.push_back(std::move(entity));
         }
@@ -97,9 +92,14 @@ void Game::handleKeyInput(SDL_Event e){
             auto entity = entityFactory->createEntity("fireball", this->player->playerX, this->player->playerY, this->player->direction);
             this->entities.push_back(std::move(entity));    
         }
-         if(e.key.keysym.sym == SDLK_y){
+        if(e.key.keysym.sym == SDLK_y){
             clearEntities = true;
-         }
+        }
+        if(e.key.keysym.sym == SDLK_e && this->player->currentNearbyObject){
+                this->player->currentNearbyObject->onInteract();
+
+        }
+
     }
  }
 
@@ -231,31 +231,35 @@ void Game::drawMap(){
                 SDL_RenderCopy(renderer,floorTexture,&floorAtlasCoords,&currentTileDimensions);
             }
 
-            // Draw items
 
-            if(this->level->itemMap.at(currentTile) == 1){
-                SDL_Rect block {currentSquareX, currentSquareY,TILE_UNIT_SIZE,TILE_UNIT_SIZE};
+            // Draw interactables 
 
-                // Test code
-                int atlasOffset;
+            auto it = this->level->interactables.find(currentTile);
+            if (it != this->level->interactables.end()) {
+                IInteractable* obj = it->second.get();
+                // Use the object's logic to decide appearance
+                int atlasX = obj->getAtlasX(); // = 0 for chest //
+                // TODO: find way to switch between default and "in range" interactable sprite
 
-                // TODO: Rewrite this code so it makes more sense and is scalable
-                std::pair<int, int> itemCoords = {currentTileX *64, currentTileY* 64};
-                std::pair<int, int> playerCoords = {player->playerX, player->playerY};
-                if (inRange(playerCoords,itemCoords)){
-                     atlasOffset = 16;
-                     this->userInterface->isInteractButtonShown = true;
-                    // Add to an interactable queue of some kind?
-
-                } else {
-                    atlasOffset = 0;
-                    this->userInterface->isInteractButtonShown = false;
+                // {0,0,16,16}
+        
+                // Distance check for UI
+                std::pair<int, int> itemPos = {currentTileX * 64, currentTileY * 64};
+                if (inRange({player->playerX, player->playerY}, itemPos)) {
+                    atlasX += 16; // Shift to "highlighted" sprite in atlas
+                    // Tell the UI what to say
+                    // this->userInterface->setPrompt(obj->getInteractPrompt());
+                    this->userInterface->isInteractButtonShown = true;
+                    // update player
+                    this->player->currentNearbyObject = obj;
+                } else{
+                     this->userInterface->isInteractButtonShown = false;
+                     this->player->currentNearbyObject = nullptr;
                 }
 
-                
-                SDL_Rect atlasCoords {atlasOffset,0,16,16};
-                SDL_RenderCopy(renderer,miscTexture,&atlasCoords,&currentTileDimensions);
-              }
+            SDL_Rect atlasCoords {atlasX, 0, 16, 16};
+            SDL_RenderCopy(renderer, miscTexture, &atlasCoords, &currentTileDimensions);
+            }
 
             // Draw Walls
             if(this->level->wallMap.at(currentTile) == 1){
@@ -394,7 +398,7 @@ void Game::drawEntity(Entity * entity){
 
     // Red background
     // SDL_Rect bgRect = { x, y, barWidth, barHeight };
-    SDL_Rect bgRect = { x, y, 64, 5 };
+    SDL_Rect bgRect = { x, y, healthWidth, 5 };
     SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
     SDL_RenderFillRect(renderer, &bgRect);
 

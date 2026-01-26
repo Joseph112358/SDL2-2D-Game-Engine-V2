@@ -1,5 +1,5 @@
 #include "Level.h"
-#include "game_objects/InteractableObject.h"
+#include "game_objects/Interactables.hpp"
 #include <iostream>
 #include <vector>
  // Needs to store
@@ -38,47 +38,56 @@ Level::Level(int levelCode){
           1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,
           0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,                    
          };
-   this->itemMap = * new std::vector<int> 
-         {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+      std::vector<int> itemMapData = { // This is memory inefficient (lots of zeros)
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-          0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+          0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0, // Let's say 1 is a Chest
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
           0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,                    
          };
+      for (int i = 0; i < itemMapData.size(); i++) {
+            if (itemMapData[i] == 1) {
+                // Store in the map: index -> Object
+                this->interactables[i] = std::make_unique<Chest>();
+            } else if (itemMapData[i] == 2) {
+                this->interactables[i] = std::make_unique<Lever>();
+            }
+        }
+
    }
-   else {
-      this->mapX = 6;
-      this->mapY = 6;
-      this->wallMap = * new std::vector<int> 
-         {1,1,1,1,1,1,
-          1,0,0,0,0,1,
-          1,0,0,0,0,1,
-          1,0,0,0,0,1,
-          1,0,0,0,0,1,
-          1,1,1,1,1,1,                
-         };
-   this->floorMap = * new std::vector<int> 
-         {1,0,1,0,1,0,
-          1,0,1,0,1,0,
-          1,0,1,0,1,0,
-          1,0,1,0,1,0,
-          1,0,1,0,1,0,
-          1,0,1,0,1,0,                
-         };
-   this->itemMap = * new std::vector<int> 
-         {0,0,0,0,0,0,
-         0,0,0,0,0,0,
-         0,0,0,0,0,0,
-         0,0,0,0,0,0,
-         0,0,0,0,0,0,
-         0,0,0,0,0,0,
-         };
-   }
+//    else {
+//       this->mapX = 6;
+//       this->mapY = 6;
+//       this->wallMap = * new std::vector<int> 
+//          {1,1,1,1,1,1,
+//           1,0,0,0,0,1,
+//           1,0,0,0,0,1,
+//           1,0,0,0,0,1,
+//           1,0,0,0,0,1,
+//           1,1,1,1,1,1,                
+//          };
+//    this->floorMap = * new std::vector<int> 
+//          {1,0,1,0,1,0,
+//           1,0,1,0,1,0,
+//           1,0,1,0,1,0,
+//           1,0,1,0,1,0,
+//           1,0,1,0,1,0,
+//           1,0,1,0,1,0,                
+//          };
+//    this->itemMap = * new std::vector<int> 
+//          {0,0,0,0,0,0,
+//          0,0,0,0,0,0,
+//          0,0,0,0,0,0,
+//          0,0,0,0,0,0,
+//          0,0,0,0,0,0,
+//          0,0,0,0,0,0,
+//          };
+//    }
 }
 
 // Create level from config file?

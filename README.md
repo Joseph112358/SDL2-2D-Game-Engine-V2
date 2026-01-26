@@ -16,3 +16,7 @@ in the root directory
 Press Ctrl + Shift + p to open the vs code command palette 
 Press cmake build
 Your program should compile
+
+to run
+in the root directory
+./build/hello
