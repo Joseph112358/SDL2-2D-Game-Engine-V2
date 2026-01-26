@@ -19,4 +19,5 @@ class Player {
         void movePlayer(int dx, int dy, Level* level);
         bool checkWalkCollision(int x, int y, Level * level);
         std::vector<int>  getNeighborTiles(std::vector<int> map, int mapX);
+        IInteractable* currentNearbyObject = nullptr;
 };

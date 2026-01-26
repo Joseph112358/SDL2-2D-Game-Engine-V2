@@ -19,4 +19,4 @@ Your program should compile
 
 to run
 in the root directory
- ./build/hello
+./build/hello

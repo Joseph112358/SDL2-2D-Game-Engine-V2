@@ -27,6 +27,8 @@ add_executable(hello
     UserInterface.cpp
     Sprite.cpp
     Utils.cpp
+    game_objects/IInteractable.hpp
+    game_objects/Interactables.hpp
 )
 
 # Include resources
