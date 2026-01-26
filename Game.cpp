@@ -394,7 +394,7 @@ void Game::drawEntity(Entity * entity){
 
     // Red background
     // SDL_Rect bgRect = { x, y, barWidth, barHeight };
-    SDL_Rect bgRect = { x, y, 64, 5 };
+    SDL_Rect bgRect = { x, y, healthWidth, 5 };
     SDL_SetRenderDrawColor(renderer, 128, 0, 0, 255);
     SDL_RenderFillRect(renderer, &bgRect);
 
