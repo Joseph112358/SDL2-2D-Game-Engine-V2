@@ -7,6 +7,12 @@
 
 class UserInterface {
     public:
+        SDL_Rect windowRect = { 200, 200, 500, 400 }; // Default position
+        bool isDragging = false;
+        int dragOffsetX = 0;
+        int dragOffsetY = 0;
+        void handleMouseEvents(SDL_Event& e);
+
         MenuType activeMenu = MenuType::NONE;
         UserInterface();
         bool isInventoryShown;

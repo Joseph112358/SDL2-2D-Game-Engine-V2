@@ -84,20 +84,31 @@ SDL_Texture* Game::loadTexture(const char* path) {
     return tex;
 }
 
-void Game::handleEvents(){
+void Game::handleEvents() {
     SDL_Event event;
-    SDL_PollEvent(&event);
-    switch (event.type) {
-        case SDL_QUIT:
-            isRunning = false;
-            break;
+    // Process ALL events waiting in the queue
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_QUIT:
+                isRunning = false;
+                break;
+            
+            // Pass the event to the UI first
+            default:
+                if (this->userInterface->activeMenu != MenuType::NONE) {
+                    this->userInterface->handleMouseEvents(event);
+                }
+                break;
+        }
+        
+        // Handle "one-shot" key presses (E, M, Escape)
+        handleKeyInput(event);
     }
     
-    // TODO: Rename functions so function / purpose is more understandable
-     handleKeyboardInput(event); // Handle movement
-     handleKeyInput(event);
-
+    // Handle continuous movement (WASD)
+    handleKeyboardInput(); 
 }
+
 
 void Game::handleKeyInput(SDL_Event e){
     if(e.type == SDL_KEYDOWN && SDL_PollEvent(&e)){
@@ -142,7 +153,7 @@ void Game::handleKeyInput(SDL_Event e){
     }
  }
 
-void Game::handleKeyboardInput(SDL_Event e){
+void Game::handleKeyboardInput(){
     player->playerIdle = true;
     int playerMovementSpeed = 16;
     player->direction = 90;

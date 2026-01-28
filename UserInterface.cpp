@@ -14,7 +14,8 @@ void UserInterface::drawWindow(SDL_Renderer* renderer, int w, int h, SDL_Color c
     int screenW = 1088; // Ideally pass these in or use constants
     int screenH = 704;
 
-    SDL_Rect rect = { (screenW - w) / 2, (screenH - h) / 2, w, h };
+    // SDL_Rect rect = { (screenW - w) / 2, (screenH - h) / 2, w, h };
+    SDL_Rect rect = this->windowRect;
 
     // Background with transparency
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
@@ -25,6 +26,32 @@ void UserInterface::drawWindow(SDL_Renderer* renderer, int w, int h, SDL_Color c
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderDrawRect(renderer, &rect);
 
+}
+
+void UserInterface::handleMouseEvents(SDL_Event& e) {
+    int mx, my;
+    SDL_GetMouseState(&mx, &my);
+
+    if (e.type == SDL_MOUSEBUTTONDOWN) {
+        // Only start dragging if clicking the "Header" (top 30 pixels of the window)
+        SDL_Rect header = { windowRect.x, windowRect.y, windowRect.w, 30 };
+        
+        if (mx >= header.x && mx <= header.x + header.w && 
+            my >= header.y && my <= header.y + header.h) {
+            isDragging = true;
+            dragOffsetX = mx - windowRect.x;
+            dragOffsetY = my - windowRect.y;
+        }
+    }
+
+    if (e.type == SDL_MOUSEBUTTONUP) {
+        isDragging = false;
+    }
+
+    if (e.type == SDL_MOUSEMOTION && isDragging) {
+        windowRect.x = mx - dragOffsetX;
+        windowRect.y = my - dragOffsetY;
+    }
 }
 
 void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* uiTexture) {

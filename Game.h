@@ -68,7 +68,7 @@ class Game {
 
     private:
         bool isRunning;
-        void handleKeyboardInput(SDL_Event e);
+        void handleKeyboardInput();
         void handleKeyInput(SDL_Event e);
         SDL_Window *window;
         SDL_Renderer *renderer;
@@ -78,4 +78,4 @@ class Game {
         SDL_Texture* miscTexture = nullptr; 
 };
 
-#endif /* Game_h*/
+#endif
