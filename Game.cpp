@@ -199,6 +199,10 @@ void Game::drawMap(){
     // Camera system works, but is a little unintuitive
     // Extract to tiny function?
 
+    // Reset interactables for new frame.
+    this->userInterface->isInteractButtonShown = false;
+    this->player->currentNearbyObject = nullptr;
+
     for(int i = (-8 * TILE_UNIT_SIZE); i < (10* TILE_UNIT_SIZE); i+= 64){
         for(int j = (-5 *TILE_UNIT_SIZE); j < (7* TILE_UNIT_SIZE); j+=64){
             int currentSquareX = kMiddleOfScreenX + (i) - playerXoffset;
@@ -252,9 +256,6 @@ void Game::drawMap(){
                     this->userInterface->isInteractButtonShown = true;
                     // update player
                     this->player->currentNearbyObject = obj;
-                } else{
-                     this->userInterface->isInteractButtonShown = false;
-                     this->player->currentNearbyObject = nullptr;
                 }
 
             SDL_Rect atlasCoords {atlasX, 0, 16, 16};
