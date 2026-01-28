@@ -80,7 +80,13 @@ void Game::handleEvents(){
 
 void Game::handleKeyInput(SDL_Event e){
     if(e.type == SDL_KEYDOWN && SDL_PollEvent(&e)){
+
+        if (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE) {
+            this->userInterface->activeMenu = MenuType::NONE; // The "Universal" close
+        }
+
         if(e.key.keysym.sym == SDLK_m){
+        // TODO: Fix this
         this->userInterface->toggleInventoryShown();
         }
         if(e.key.keysym.sym == SDLK_b){
@@ -95,10 +101,22 @@ void Game::handleKeyInput(SDL_Event e){
         if(e.key.keysym.sym == SDLK_y){
             clearEntities = true;
         }
-        if(e.key.keysym.sym == SDLK_e && this->player->currentNearbyObject){
-                this->player->currentNearbyObject->onInteract();
 
-        }
+
+        // TODO add code for if the user moves out of range of a chest or something
+        if(e.key.keysym.sym == SDLK_e) {
+            // 1. If a menu is already open, CLOSE it
+            if (this->userInterface->activeMenu != MenuType::NONE) {
+                this->userInterface->activeMenu = MenuType::NONE;
+            } 
+            // 2. Otherwise, check if we can OPEN one
+            else if (this->player->currentNearbyObject) {
+                this->player->currentNearbyObject->onInteract();
+                MenuType menu = this->player->currentNearbyObject->getAssociatedMenu();
+                this->userInterface->activeMenu = menu;
+            }
+}
+        
 
     }
  }
@@ -299,14 +317,6 @@ void Game::render(){
 
     drawEntities(this->entities);
 
-    SDL_DestroyTexture(atlasTexture);
-    SDL_DestroyTexture(floorTexture);
-    SDL_DestroyTexture(miscTexture);
-    SDL_FreeSurface(atlasSurface);
-    SDL_FreeSurface(floorSurface);
-    SDL_FreeSurface(miscSurface);
-
-
     
     renderPlayer(this->player);
     
@@ -318,9 +328,22 @@ void Game::render(){
     //     drawTileBox(tile);
     // }
 
-    if(this->userInterface->isInventoryShown){
-        this->userInterface->drawInventoryMenu(renderer);
-    }
+
+    // Deprecated UI system
+    // if(this->userInterface->isInventoryShown){
+    //     this->userInterface->drawInventoryMenu(renderer);
+    // }
+
+    
+    this->userInterface->render(this->renderer, miscTexture);
+
+     SDL_DestroyTexture(atlasTexture);
+    SDL_DestroyTexture(floorTexture);
+    SDL_DestroyTexture(miscTexture);
+    SDL_FreeSurface(atlasSurface);
+    SDL_FreeSurface(floorSurface);
+    SDL_FreeSurface(miscSurface);
+
     SDL_RenderPresent(renderer);
 }
 

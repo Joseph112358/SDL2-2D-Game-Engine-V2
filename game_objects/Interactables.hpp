@@ -14,6 +14,11 @@ public:
         }
     int getAtlasX() const override { return 0; } // First icon in your atlas
     std::string getInteractPrompt() const override { return "Open Chest [E]"; } // These are obsolete atm
+
+   MenuType getAssociatedMenu() override { 
+        return MenuType::CHEST; 
+    }
+
 };
 
 class Lever : public IInteractable {

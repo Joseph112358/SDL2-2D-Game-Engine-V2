@@ -29,6 +29,7 @@ add_executable(hello
     Utils.cpp
     game_objects/IInteractable.hpp
     game_objects/Interactables.hpp
+    gameTypes.h
 )
 
 # Include resources
