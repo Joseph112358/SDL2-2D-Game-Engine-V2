@@ -7,9 +7,7 @@
 #include "Level.h"
 #include "Player.h"
 #include "entities/Entity.h"
-// #include "entities/Entity2.h" // new
 #include "entities/Fireball.h"
-// #include "entities/EntityFactory.h"
 #include "entities/EntityFactory.h"
 #include "UserInterface.h"
 #include <memory>
@@ -35,6 +33,8 @@ class Game {
         // std::list<int> interactablesList;
 
         void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
+
+        SDL_Texture* loadTexture(const char* path);
 
         // Main core functions (will be public to main)
         void handleEvents();
@@ -71,7 +71,11 @@ class Game {
         void handleKeyboardInput(SDL_Event e);
         void handleKeyInput(SDL_Event e);
         SDL_Window *window;
-        SDL_Renderer *renderer; 
+        SDL_Renderer *renderer;
+
+        SDL_Texture* atlasTexture = nullptr;
+        SDL_Texture* floorTexture = nullptr;
+        SDL_Texture* miscTexture = nullptr; 
 };
 
 #endif /* Game_h*/

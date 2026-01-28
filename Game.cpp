@@ -34,10 +34,8 @@ const Uint8 * keyState;
 const int kMiddleOfScreenX = 512; const int kMiddleOfScreenY = 320;
 const int TILE_UNIT_SIZE = 64;
 
-Game::Game(){
-    int joe = 2;
-    // bool collision_occuring = false;
-};
+Game::Game(){};
+
 Game::~Game(){
 
 };
@@ -57,10 +55,33 @@ void Game::init(const char* title, int xpos, int ypos, int width, int height, bo
 
     window = SDL_CreateWindow(title, xpos, xpos, width, height, flags);
     renderer = SDL_CreateRenderer(window, -1, 0 );
-    isRunning = true;
+
+    // Load textures once here.
+    if (renderer) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        
+        this->atlasTexture = loadTexture("res/Atlas3.png");
+        this->floorTexture = loadTexture("res/desert.png");
+        this->miscTexture  = loadTexture("res/misc.png");
+        
+        SDL_Log("Textures loaded successfully.");
+    }
+    
 
     this->level = new Level(0);
+    isRunning = true;
     
+}
+
+SDL_Texture* Game::loadTexture(const char* path) {
+    SDL_Surface* tempSurface = IMG_Load(path);
+    if (!tempSurface) {
+        SDL_Log("Failed to load: %s | Error: %s", path, IMG_GetError());
+        return nullptr;
+    }
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(this->renderer, tempSurface);
+    SDL_FreeSurface(tempSurface);
+    return tex;
 }
 
 void Game::handleEvents(){
@@ -303,13 +324,6 @@ void Game::render(){
     SDL_RenderSetLogicalSize(renderer, 1088, 704);
     SDL_RenderClear(renderer);
 
-    atlasSurface = IMG_Load("res/Atlas3.png");
-    atlasTexture = SDL_CreateTextureFromSurface(renderer, atlasSurface);
-    floorSurface = IMG_Load("res/desert.png");
-    floorTexture = SDL_CreateTextureFromSurface(renderer, floorSurface);
-    miscSurface = IMG_Load("res/misc.png");
-    miscTexture = SDL_CreateTextureFromSurface(renderer, miscSurface);
-
     drawMap();
     //   Draw floor
     //   Draw floor items
@@ -335,14 +349,7 @@ void Game::render(){
     // }
 
     
-    this->userInterface->render(this->renderer, miscTexture);
-
-     SDL_DestroyTexture(atlasTexture);
-    SDL_DestroyTexture(floorTexture);
-    SDL_DestroyTexture(miscTexture);
-    SDL_FreeSurface(atlasSurface);
-    SDL_FreeSurface(floorSurface);
-    SDL_FreeSurface(miscSurface);
+    this->userInterface->render(this->renderer, this->miscTexture);
 
     SDL_RenderPresent(renderer);
 }
@@ -368,7 +375,7 @@ void Game::drawEntities(const std::vector<std::unique_ptr<Entity>>& entities) {
 
 
 
-// This should not be here
+// This should not be here (or maybe it should)
 void Game::drawEntity(Entity * entity){
 
     // Work out distance to player
@@ -488,9 +495,23 @@ void Game::drawTileBox(int tileIndex){
 }
 
 void Game::clean(){
-    SDL_DestroyWindow(window);
+    // 1. Clean up Textures
+    SDL_DestroyTexture(atlasTexture);
+    SDL_DestroyTexture(floorTexture);
+    SDL_DestroyTexture(miscTexture);
+
+    // 2. Clean up Allocated Objects (The 'new' stuff)
+    delete player;
+    delete userInterface;
+    delete entityFactory;
+    delete level;
+
+    // 3. Clean up SDL Core
     SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     SDL_Quit();
+    
+    SDL_Log("Game cleaned up and memory freed.");
 }
 
 std::pair<int,int> Game::arrayIntToPair(int arrayLocation){
