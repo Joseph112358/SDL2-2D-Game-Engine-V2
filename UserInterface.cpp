@@ -1,6 +1,7 @@
 #include "UserInterface.h"
 #include <stdio.h>
 #include <SDL.h>
+#include "Utils.h"
 
 UserInterface::UserInterface(){
         this->isInventoryShown = false;
@@ -9,7 +10,7 @@ UserInterface::UserInterface(){
 
 // current screen coords for reference: 1088,704
 
-void UserInterface::drawWindow(SDL_Renderer* renderer, int w, int h, SDL_Color color){
+void UserInterface::drawWindow(SDL_Renderer* renderer, SDL_Color color){
     // Center the window automatically based on a standard 1080p or 720p target
     int screenW = 1088; // Ideally pass these in or use constants
     int screenH = 704;
@@ -33,42 +34,92 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
     SDL_GetMouseState(&mx, &my);
 
     if (e.type == SDL_MOUSEBUTTONDOWN) {
-        // Only start dragging if clicking the "Header" (top 30 pixels of the window)
-        SDL_Rect header = { windowRect.x, windowRect.y, windowRect.w, 30 };
-        
-        if (mx >= header.x && mx <= header.x + header.w && 
-            my >= header.y && my <= header.y + header.h) {
-            isDragging = true;
-            dragOffsetX = mx - windowRect.x;
+        // 1. Check Title Bar (First 30px of window)
+        SDL_Rect titleBar = { windowRect.x, windowRect.y, windowRect.w, 30 };
+        if (Utils::pointInRect(mx, my, titleBar)) {
+            isDraggingWindow = true;
+            dragOffsetX = mx - windowRect.x; // Capture the offset!
             dragOffsetY = my - windowRect.y;
+            return;
+        }
+
+        // 2. Check Slots
+        for (int i = 0; i < 10; i++) {
+            if (Utils::pointInRect(mx, my, chestSlots[i].rect) && chestSlots[i].item) {
+                draggingItem = chestSlots[i].item;
+                chestSlots[i].item = nullptr;
+                sourceSlotIndex = i;
+                return;
+            }
         }
     }
 
-    if (e.type == SDL_MOUSEBUTTONUP) {
-        isDragging = false;
-    }
-
-    if (e.type == SDL_MOUSEMOTION && isDragging) {
+    // UPDATE POSITION DURING MOTION
+    if (e.type == SDL_MOUSEMOTION && isDraggingWindow) {
         windowRect.x = mx - dragOffsetX;
         windowRect.y = my - dragOffsetY;
     }
+
+    if (e.type == SDL_MOUSEBUTTONUP) {
+        isDraggingWindow = false;
+
+        if (draggingItem) {
+            bool droppedInSlot = false;
+            for (int i = 0; i < 10; i++) {
+                if (Utils::pointInRect(mx, my, chestSlots[i].rect)) {
+                    chestSlots[i].item = draggingItem;
+                    droppedInSlot = true;
+                    break;
+                }
+            }
+            if (!droppedInSlot) {
+                chestSlots[sourceSlotIndex].item = draggingItem;
+            }
+            draggingItem = nullptr;
+        }
+    }
 }
 
-void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* uiTexture) {
-    // 1. Draw the "Press E" prompt if needed
-    if (isInteractButtonShown && activeMenu == MenuType::NONE) {
-        drawInteractButton(uiTexture, renderer);
-    }
 
-    // 2. Draw active menus
+void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
     if (activeMenu == MenuType::CHEST) {
-        drawWindow(renderer, 500, 400, {20, 20, 20}); // Dark grey chest window
-        // Logic for drawing chest items goes here
-    } 
-    else if (activeMenu == MenuType::PLAYER_INVENTORY) {
-        drawWindow(renderer, 600, 500, {10, 10, 40}); // Dark blue player window
+        drawWindow(renderer, {40, 40, 40, 255});
+        
+        int slotsPerRow = 5; // Grid logic so they stay inside the window
+        int slotSize = 64;
+        int padding = 10;
+
+        for (int i = 0; i < 10; i++) {
+            int row = i / slotsPerRow;
+            int col = i % slotsPerRow;
+
+            // Slots move with window
+            chestSlots[i].rect = { 
+                windowRect.x + 20 + (col * (slotSize + padding)), 
+                windowRect.y + 50 + (row * (slotSize + padding)), 
+                slotSize, 
+                slotSize 
+            };
+            
+            SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+            SDL_RenderFillRect(renderer, &chestSlots[i].rect);
+
+            if (chestSlots[i].item) {
+                SDL_Rect src = { chestSlots[i].item->atlasX, chestSlots[i].item->atlasY, 16, 16 };
+                SDL_RenderCopy(renderer, tex, &src, &chestSlots[i].rect);
+            }
+        }
+
+        if (draggingItem) {
+            int mx, my;
+            SDL_GetMouseState(&mx, &my);
+            SDL_Rect ghostRect = { mx - 32, my - 32, 64, 64 };
+            SDL_Rect src = { draggingItem->atlasX, draggingItem->atlasY, 16, 16 };
+            SDL_RenderCopy(renderer, tex, &src, &ghostRect);
+        }
     }
 }
+
 
 // Temporary fix for prototyping, really need to overhaul how textures are loaded and accessed
 void UserInterface::drawInteractButton(SDL_Texture* itemsTexture,SDL_Renderer *renderer){
