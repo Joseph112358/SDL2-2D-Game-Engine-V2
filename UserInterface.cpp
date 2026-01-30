@@ -6,6 +6,18 @@
 UserInterface::UserInterface(){
         this->isInventoryShown = false;
         this->isInteractButtonShown = false;
+        this->activeMenu = MenuType::NONE;
+
+
+        // 2. Clear all slots to nullptr first (IMPORTANT for safety)
+    for(int i = 0; i < 10; i++) {
+        chestSlots[i].item = nullptr;
+
+        Item* testItem = new Item{"Test Sword", 0, 16};
+
+        // 4. Put it in the first slot
+        this->chestSlots[0].item = testItem;
+    }
 }
 
 // current screen coords for reference: 1088,704
