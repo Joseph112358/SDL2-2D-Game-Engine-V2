@@ -9,4 +9,11 @@ enum class MenuType {
     NPC_DIALOG
 };
 
+
+struct Item {
+    std::string name;
+    int atlasX; 
+    int atlasY;
+};
+
 #endif

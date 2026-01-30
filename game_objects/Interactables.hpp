@@ -6,19 +6,17 @@
 
 class Chest : public IInteractable {
 public:
-    // Move this to SDL log
-    void onInteract() override { 
-
-        SDL_Log("Opened chest!\n");
-        // std::cout << "Opened chest!\n"; 
-        }
     
-    Item* contents[10]; // This chest's specific items
+    void onInteract() override { 
+        SDL_Log("Opened chest!\n");
+    }
+    
+    Item* storage[10]; // This chest's specific items
 
+  
     Chest() {
-        // Initialize this specific chest with items
-        for(int i = 0; i < 10; i++) contents[i] = nullptr;
-        contents[0] = new Item{"Rusty Key", 0, 16}; 
+        for(int i = 0; i < 10; i++) storage[i] = nullptr;
+        storage[0] = new Item{"fireball", 16, 16}; 
     }
     
     int getAtlasX() const override { return 0; } // First icon in your atlas

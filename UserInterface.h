@@ -5,14 +5,8 @@
 #include "GameTypes.h"
 #include <queue>
 
-// Items code
-        struct Item {
-        std::string name;
-        int atlasX; // Where it is on your miscTexture
-        int atlasY;
-        };
 
-        struct Slot {
+struct Slot {
         SDL_Rect rect;   // Where the slot is drawn on screen
         Item* item = nullptr; 
         };
@@ -44,7 +38,7 @@ class UserInterface {
         void drawInventoryMenu(SDL_Renderer * renderer);
 
         // New Drag & Drop members
-        Slot chestSlots[10];      // 10 slots for the chest
+        Slot uiSlots[10];      // 10 slots for the chest
         Item* draggingItem = nullptr; 
         int sourceSlotIndex = -1; // Where the item came from
 

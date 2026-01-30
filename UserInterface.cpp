@@ -11,12 +11,12 @@ UserInterface::UserInterface(){
 
         // 2. Clear all slots to nullptr first (IMPORTANT for safety)
     for(int i = 0; i < 10; i++) {
-        chestSlots[i].item = nullptr;
+        uiSlots[i].item = nullptr;
 
         Item* testItem = new Item{"Test Sword", 0, 16};
 
         // 4. Put it in the first slot
-        this->chestSlots[0].item = testItem;
+        this->uiSlots[0].item = testItem;
     }
 }
 
@@ -57,9 +57,9 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
 
         // 2. Check Slots
         for (int i = 0; i < 10; i++) {
-            if (Utils::pointInRect(mx, my, chestSlots[i].rect) && chestSlots[i].item) {
-                draggingItem = chestSlots[i].item;
-                chestSlots[i].item = nullptr;
+            if (Utils::pointInRect(mx, my, uiSlots[i].rect) && uiSlots[i].item) {
+                draggingItem = uiSlots[i].item;
+                uiSlots[i].item = nullptr;
                 sourceSlotIndex = i;
                 return;
             }
@@ -78,14 +78,14 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
         if (draggingItem) {
             bool droppedInSlot = false;
             for (int i = 0; i < 10; i++) {
-                if (Utils::pointInRect(mx, my, chestSlots[i].rect)) {
-                    chestSlots[i].item = draggingItem;
+                if (Utils::pointInRect(mx, my, uiSlots[i].rect)) {
+                    uiSlots[i].item = draggingItem;
                     droppedInSlot = true;
                     break;
                 }
             }
             if (!droppedInSlot) {
-                chestSlots[sourceSlotIndex].item = draggingItem;
+                uiSlots[sourceSlotIndex].item = draggingItem;
             }
             draggingItem = nullptr;
         }
@@ -106,7 +106,7 @@ void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
             int col = i % slotsPerRow;
 
             // Slots move with window
-            chestSlots[i].rect = { 
+            uiSlots[i].rect = { 
                 windowRect.x + 20 + (col * (slotSize + padding)), 
                 windowRect.y + 50 + (row * (slotSize + padding)), 
                 slotSize, 
@@ -114,11 +114,11 @@ void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
             };
             
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-            SDL_RenderFillRect(renderer, &chestSlots[i].rect);
+            SDL_RenderFillRect(renderer, &uiSlots[i].rect);
 
-            if (chestSlots[i].item) {
-                SDL_Rect src = { chestSlots[i].item->atlasX, chestSlots[i].item->atlasY, 16, 16 };
-                SDL_RenderCopy(renderer, tex, &src, &chestSlots[i].rect);
+            if (uiSlots[i].item) {
+                SDL_Rect src = { uiSlots[i].item->atlasX, uiSlots[i].item->atlasY, 16, 16 };
+                SDL_RenderCopy(renderer, tex, &src, &uiSlots[i].rect);
             }
         }
 
