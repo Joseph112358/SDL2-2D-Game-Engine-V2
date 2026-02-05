@@ -2,12 +2,14 @@
 #include <string>
 #include "./../GameTypes.h"
 
+class UserInterface; // this is temp probs
+
 #pragma once
 class IInteractable {
     public:
         virtual ~IInteractable() = default;
 
-        virtual void onInteract() = 0;
+        virtual InteractionResult onInteract() = 0;
 
         virtual MenuType getAssociatedMenu() { return MenuType::NONE; }
 

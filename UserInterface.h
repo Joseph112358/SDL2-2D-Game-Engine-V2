@@ -42,6 +42,24 @@ class UserInterface {
         Item* draggingItem = nullptr; 
         int sourceSlotIndex = -1; // Where the item came from
 
+        Inventory* currentInventorySource = nullptr;
+
+        void openContainer(Inventory* inv) {
+        if (inv == nullptr) return;
+
+        this->currentInventorySource = inv;
+        this->activeMenu = MenuType::CHEST;
+        }
+
+        void closeMenu() {
+    this->activeMenu = MenuType::NONE;
+    
+    // Safety: Clear the pointer so we don't accidentally 
+    // try to render or access items from a chest that isn't open.
+    this->currentInventorySource = nullptr; 
+}
+
+
         void initChestSlots();    // Setup the grid
         // ...
 

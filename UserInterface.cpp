@@ -59,7 +59,11 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
         for (int i = 0; i < 10; i++) {
             if (Utils::pointInRect(mx, my, uiSlots[i].rect) && uiSlots[i].item) {
                 draggingItem = uiSlots[i].item;
+
+
                 uiSlots[i].item = nullptr;
+                currentInventorySource->slots[i] = nullptr;
+
                 sourceSlotIndex = i;
                 return;
             }
@@ -80,12 +84,15 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
             for (int i = 0; i < 10; i++) {
                 if (Utils::pointInRect(mx, my, uiSlots[i].rect)) {
                     uiSlots[i].item = draggingItem;
+                    currentInventorySource->slots[i] = draggingItem;
+
                     droppedInSlot = true;
                     break;
                 }
             }
             if (!droppedInSlot) {
                 uiSlots[sourceSlotIndex].item = draggingItem;
+                currentInventorySource->slots[sourceSlotIndex] = draggingItem;
             }
             draggingItem = nullptr;
         }
@@ -94,7 +101,7 @@ void UserInterface::handleMouseEvents(SDL_Event& e) {
 
 
 void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
-    if (activeMenu == MenuType::CHEST) {
+       if (activeMenu == MenuType::CHEST && currentInventorySource != nullptr) {
         drawWindow(renderer, {40, 40, 40, 255});
         
         int slotsPerRow = 5; // Grid logic so they stay inside the window
@@ -102,6 +109,9 @@ void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
         int padding = 10;
 
         for (int i = 0; i < 10; i++) {
+
+            uiSlots[i].item = currentInventorySource->slots[i];
+
             int row = i / slotsPerRow;
             int col = i % slotsPerRow;
 
@@ -116,7 +126,7 @@ void UserInterface::render(SDL_Renderer* renderer, SDL_Texture* tex) {
             SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
             SDL_RenderFillRect(renderer, &uiSlots[i].rect);
 
-            if (uiSlots[i].item) {
+             if (uiSlots[i].item) {
                 SDL_Rect src = { uiSlots[i].item->atlasX, uiSlots[i].item->atlasY, 16, 16 };
                 SDL_RenderCopy(renderer, tex, &src, &uiSlots[i].rect);
             }

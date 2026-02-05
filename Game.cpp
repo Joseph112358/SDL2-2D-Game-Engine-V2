@@ -137,15 +137,29 @@ void Game::handleKeyInput(SDL_Event e){
 
         // TODO add code for if the user moves out of range of a chest or something
         if(e.key.keysym.sym == SDLK_e) {
-            // 1. If a menu is already open, CLOSE it
+            // 1. If a menu is already open, then close it
             if (this->userInterface->activeMenu != MenuType::NONE) {
                 this->userInterface->activeMenu = MenuType::NONE;
             } 
-            // 2. Otherwise, check if we can OPEN one
+
+            // Check if we can interact with a nearby object
             else if (this->player->currentNearbyObject) {
-                this->player->currentNearbyObject->onInteract();
-                MenuType menu = this->player->currentNearbyObject->getAssociatedMenu();
-                this->userInterface->activeMenu = menu;
+
+                InteractionResult result = this->player->currentNearbyObject->onInteract();
+
+                switch (result.type) {
+                    case InteractionType::OpenContainer:
+                        // Point the UI to the specific inventory data
+                        this->userInterface->openContainer(result.data.container);
+                        // Set the menu type so the UI knows to draw the chest screen
+                        this->userInterface->activeMenu = MenuType::CHEST;
+                        break;
+
+                    case InteractionType::None:
+                        // Object exists but didn't trigger a menu (e.g., a locked door message)
+                        break;
+                }
+
             }
 }
         

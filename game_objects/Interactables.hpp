@@ -2,21 +2,32 @@
 #pragma once
 #include "IInteractable.hpp"
 #include <iostream>
+#include "./../GameTypes.h"
 #include <SDL.h>
+
+class UserInterface; // this is temp probs
 
 class Chest : public IInteractable {
 public:
-    
-    void onInteract() override { 
-        SDL_Log("Opened chest!\n");
-    }
-    
-    Item* storage[10]; // This chest's specific items
+    Inventory storage;
 
-  
     Chest() {
-        for(int i = 0; i < 10; i++) storage[i] = nullptr;
-        storage[0] = new Item{"fireball", 16, 16}; 
+        for (int i = 0; i < 10; i++) {
+            storage.slots[i] = nullptr;
+        }
+        storage.slots[0] = new Item{"fireball", 0, 16}; 
+        storage.slots[1] = new Item{"fireball", 0, 16};
+    }
+
+    ~Chest() {
+        for (int i = 0; i < 10; i++) {
+            delete storage.slots[i]; // Clean up the items we created
+        }
+    }
+
+    InteractionResult onInteract() override {
+        SDL_Log("Chest opened!");
+        return InteractionResult::Open(&this->storage);
     }
     
     int getAtlasX() const override { return 0; } // First icon in your atlas
@@ -30,7 +41,12 @@ public:
 
 class Lever : public IInteractable {
 public:
-    void onInteract() override { std::cout << "Pulled lever!\n"; }
+     
+    InteractionResult onInteract() override {
+        SDL_Log("Chest interacted with.");
+        return InteractionResult{ InteractionType::None, nullptr };
+    }
+
     int getAtlasX() const override { return 32; } // Third icon in your atlas
     std::string getInteractPrompt() const override { return "Pull Lever [E]"; }
 };
